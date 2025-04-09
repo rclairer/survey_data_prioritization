@@ -31,9 +31,9 @@ colnames(age_structure_tally_table_unsatisfactory) <- col_names
 
 ##############################
 
-for (i in 1:nrow(species_list)) {
+#for (i in 1:nrow(species_list)) {
 
-#for (i in 1:10) {
+for (i in 1:10) {
   species_name <- species_list$species[i]
   species_name <- gsub(" ", "_", species_name)
   
@@ -95,7 +95,7 @@ for (i in 1:nrow(species_list)) {
                 greater_than_onehundredfifteen = sum(total_catch_numbers > 115)) %>%
       rename(year = "as.character(Year)")
     
-    write.csv(table1_satisfactory, paste0(species_name, "_table1.csv"), row.names = FALSE)
+    write.csv(table1_satisfactory, paste0(species_name, "_table1_satisfactory.csv"), row.names = FALSE)
     
     formatted_table1_satisfactory <- flextable::flextable(table1_satisfactory)
     formatted_table1_satisfactory <- theme_vanilla(formatted_table1_satisfactory)
@@ -250,7 +250,7 @@ for (i in 1:nrow(species_list)) {
     
   })
   
-  for (i in 1:nrow(species_list)) { 
+  #for (i in 1:nrow(species_list)) { 
   
   #bio_all_test <- tryCatch({
     
@@ -495,7 +495,7 @@ for (i in 1:nrow(species_list)) {
     
     
  # })
-  } 
+  #} changed
    
   ############################
   #add to main table
