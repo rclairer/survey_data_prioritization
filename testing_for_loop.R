@@ -1,6 +1,3 @@
-#MAKE AARON'S TABLES IN A FOR LOOP
-
-#to do this for all species, I will need a configuration file for common_name and I think that's it!! and I will need to create a new folder for each species
 library(dplyr)
 library(nwfscSurvey)
 library(flextable)
@@ -17,12 +14,20 @@ col_names <- c("species", as.character(2003:2019), as.character(2021:data_year))
 all_years <- c(as.character(2003:2019), as.character(2021:data_year))
 
 #blank length_width_tally table (before for loop)
-length_width_tally_table <- data.frame(matrix(ncol = length(col_names), nrow = 0))
-colnames(length_width_tally_table) <- col_names
+length_width_tally_table_satisfactory <- data.frame(matrix(ncol = length(col_names), nrow = 0))
+colnames(length_width_tally_table_satisfactory) <- col_names
+
+length_width_tally_table_unsatisfactory <- data.frame(matrix(ncol = length(col_names), nrow = 0))
+colnames(length_width_tally_table_unsatisfactory) <- col_names
+
 
 #blank age_structure_tally table (before for loop)
-age_structure_tally_table <- data.frame(matrix(ncol = length(col_names), nrow = 0))
-colnames(age_structure_tally_table) <- col_names
+age_structure_tally_table_satisfactory <- data.frame(matrix(ncol = length(col_names), nrow = 0))
+colnames(age_structure_tally_table_satisfactory) <- col_names
+
+age_structure_tally_table_unsatisfactory <- data.frame(matrix(ncol = length(col_names), nrow = 0))
+colnames(age_structure_tally_table_unsatisfactory) <- col_names
+
 
 ##############################
 
@@ -172,7 +177,7 @@ for (i in 1:nrow(species_list)) {
     ##################################################################
     
   }, error = function(e) {
-    message(paste("Pull_catch with standard_filtering = FALSE resulted in an error for i =", i, "so using standard_filtering = TRUE"))
+    message(paste("Pull_catch() with standard_filtering = FALSE resulted in an error for i =", i, "so using standard_filtering = TRUE"))
     
     catch_all <- pull_catch(
       common_name = species_list$species[i],
@@ -247,7 +252,9 @@ for (i in 1:nrow(species_list)) {
   
   for (i in 1:nrow(species_list)) { 
   
-  bio_all_test <- tryCatch({
+  #bio_all_test <- tryCatch({
+    
+    #message("Trying pull_bio() with standard_filtering = FALSE")
     
     bio_all <- pull_bio(
       common_name = species_list$species[i],
@@ -401,70 +408,70 @@ for (i in 1:nrow(species_list)) {
     
     
     
-  }, error = function(e) {
-    message(paste("Pull_bio() error for i =", i, "Using filtering = TRUE")) 
+  #}, error = function(e) {
+  #  message(paste("Pull_bio() with standard_filtering = FALSE resulted in an error for i =", i, "so using standard_filtering = TRUE")) 
     
-    bio_all <- pull_bio(
-      common_name = species_list$species[i],
-      survey = "NWFSC.Combo",
-      standard_filtering = TRUE)
+  #  bio_all <- pull_bio(
+  #    common_name = species_list$species[i],
+  #    survey = "NWFSC.Combo",
+  #    standard_filtering = TRUE)
     
-    bio_all <- bio_all[c("Length_cm", "Otosag_id", "Performance", "Scientific_name", "Trawl_id", "Width_cm", "Year")]
-    colnames(bio_all) <- c("length_cm", "otosag_id", "performance", "scientific_name", "trawl_id", "width_cm", "year") #to match bio samples
+#    bio_all <- bio_all[c("Length_cm", "Otosag_id", "Performance", "Scientific_name", "Trawl_id", "Width_cm", "Year")]
+#    colnames(bio_all) <- c("length_cm", "otosag_id", "performance", "scientific_name", "trawl_id", "width_cm", "year") #to match bio samples
     
-    bio_samples = pull_biological_samples(
-      common_name = species_list$species[i],
-      survey = "NWFSC.Combo",
-      standard_filtering = TRUE)
+#    bio_samples = pull_biological_samples(
+#      common_name = species_list$species[i],
+#      survey = "NWFSC.Combo",
+#      standard_filtering = TRUE)
     
-    bio_samples <- bio_samples[c("left_pectoral_fin_id", "length_cm", "otosag_id", "ovary_id", "performance", "scientific_name", "stomach_id", "tissue_id", "trawl_id", "width_cm", "year")]
+#    bio_samples <- bio_samples[c("left_pectoral_fin_id", "length_cm", "otosag_id", "ovary_id", "performance", "scientific_name", "stomach_id", "tissue_id", "trawl_id", "width_cm", "year")]
     
-    bio_all_samples <- left_join(bio_all, bio_samples, by = c("length_cm", "otosag_id", "performance", "scientific_name", "trawl_id", "width_cm", "year"))
+#    bio_all_samples <- left_join(bio_all, bio_samples, by = c("length_cm", "otosag_id", "performance", "scientific_name", "trawl_id", "width_cm", "year"))
     
     #TABLE 2
-    table2_satisfactory <- bio_all_samples %>%
-      filter(performance == "Satisfactory") %>%
-      group_by(as.character(year)) %>%
-      summarise(count_of_length_cm = sum(!is.na(length_cm)),
-                count_of_otosag_id = sum(!is.na(otosag_id)),
-                count_of_ovary_id = sum(!is.na(ovary_id)),
-                count_of_stomach_id = sum(!is.na(stomach_id)),
-                count_of_tissue_id = sum(!is.na(tissue_id)),
-                count_of_left_pectoral_fin_id = sum(!is.na(left_pectoral_fin_id))) %>%
-      rename(year = "as.character(year)")
+#    table2_satisfactory <- bio_all_samples %>%
+#      filter(performance == "Satisfactory") %>%
+#      group_by(as.character(year)) %>%
+#      summarise(count_of_length_cm = sum(!is.na(length_cm)),
+#                count_of_otosag_id = sum(!is.na(otosag_id)),
+#                count_of_ovary_id = sum(!is.na(ovary_id)),
+#                count_of_stomach_id = sum(!is.na(stomach_id)),
+#                count_of_tissue_id = sum(!is.na(tissue_id)),
+#                count_of_left_pectoral_fin_id = sum(!is.na(left_pectoral_fin_id))) %>%
+#      rename(year = "as.character(year)")
     
-    table2_satisfactory <- merge(data.frame("year" = all_years), table2_satisfactory, by = "year", all.x = TRUE)
+#    table2_satisfactory <- merge(data.frame("year" = all_years), table2_satisfactory, by = "year", all.x = TRUE)
     
     #optional to have 0 instead of NA
     #table2[is.na(table2)] <- 0
     
-    write.csv(table2_satisfactory, paste0(species_name, "_table2_satisfactory.csv"), row.names = FALSE)
+#    write.csv(table2_satisfactory, paste0(species_name, "_table2_satisfactory.csv"), row.names = FALSE)
     
-    formatted_table2_satisfactory <- flextable::flextable(table2_satisfactory)
-    formatted_table2_satisfactory <- theme_vanilla(formatted_table2_satisfactory)
-    formatted_table2_satisfactory <- set_header_labels(formatted_table2_satisfactory,
-                                                       values = list("year" = "Year",
-                                                                     "count_of_length_cm" = "Count of length_cm",
-                                                                     "count_of_otosag_id" = "Count of otosag_id",
-                                                                     "count_of_ovary_id" = "Count of ovary_id",
-                                                                     "count_of_stomach_id" = "Count of stomach_id",
-                                                                     "count_of_tissue_id" = "Count of tissue_id",
-                                                                     "count_of_left_pectoral_fin_id" = "Count of left_pectoral_fin_id"))
+#    formatted_table2_satisfactory <- flextable::flextable(table2_satisfactory)
+#    formatted_table2_satisfactory <- theme_vanilla(formatted_table2_satisfactory)
+#    formatted_table2_satisfactory <- set_header_labels(formatted_table2_satisfactory,
+#                                                       values = list("year" = "Year",
+#                                                                     "count_of_length_cm" = "Count of length_cm",
+#                                                                     "count_of_otosag_id" = "Count of otosag_id",
+#                                                                     "count_of_ovary_id" = "Count of ovary_id",
+#                                                                     "count_of_stomach_id" = "Count of stomach_id",
+#                                                                     "count_of_tissue_id" = "Count of tissue_id",
+#                                                                     "count_of_left_pectoral_fin_id" = "Count of left_pectoral_fin_id"))
     
-    save_as_image(formatted_table2_satisfactory, path = paste0(species_name, "_formatted_table2_satisfactory.png"))
+#    save_as_image(formatted_table2_satisfactory, path = paste0(species_name, "_formatted_table2_satisfactory.png"))
     
     #TABLE 3    
-    table3_satisfactory <- bio_all_samples %>%
-      filter(performance == "Satisfactory") %>%
-      group_by(trawl_id) %>%
-      summarise(count_of_length_cm = sum(!is.na(length_cm)),
-                count_of_otosag_id = sum(!is.na(otosag_id)),
-                count_of_ovary_id = sum(!is.na(ovary_id)),
-                count_of_stomach_id = sum(!is.na(stomach_id)),
-                count_of_tissue_id = sum(!is.na(tissue_id)),
-                count_of_left_pectoral_fin_id = sum(!is.na(left_pectoral_fin_id)))
+#    table3_satisfactory <- bio_all_samples %>%
+#      filter(performance == "Satisfactory") %>%
+#      group_by(trawl_id) %>%
+#      summarise(count_of_length_cm = sum(!is.na(length_cm)),
+#                count_of_otosag_id = sum(!is.na(otosag_id)),
+#                count_of_ovary_id = sum(!is.na(ovary_id)),
+#                count_of_stomach_id = sum(!is.na(stomach_id)),
+#                count_of_tissue_id = sum(!is.na(tissue_id)),
+#                count_of_left_pectoral_fin_id = sum(!is.na(left_pectoral_fin_id)))
     
-    write.csv(table3_satisfactory, paste0(species_name, "_table3_satisfactory.csv"), row.names = FALSE)
+#    write.csv(table3_satisfactory, paste0(species_name, "_table3_satisfactory.csv"), row.names = FALSE)
     
     #table is too big to format
     #formatted_table3_satisfactory <- flextable::flextable(table3_satisfactory)
@@ -487,14 +494,120 @@ for (i in 1:nrow(species_list)) {
     #########################################################   
     
     
-  })
-  
+ # })
+  } 
    
+  ############################
+  #add to main table
+  #vector from tables for length weight
+  
+  ############################################# 
+  #########    SATISFACTORY   ################# 
+  #############################################
+  length_width_tally_satisfactory <- dplyr::pull(table2_satisfactory, count_of_length_cm)
+  length_width_tally_satisfactory <- as.data.frame(t(length_width_tally_satisfactory))
+  length_width_tally_satisfactory <- cbind(species = species_list$species[i], length_width_tally_satisfactory) #cbind one column with species name in it!!!!!
+  colnames(length_width_tally_satisfactory) <- col_names
+  
+  #vector from tables for age structures
+  age_structure_tally_satisfactory <- dplyr::pull(table2_satisfactory, count_of_otosag_id)
+  age_structure_tally_satisfactory <- as.data.frame(t(age_structure_tally_satisfactory))
+  age_structure_tally_satisfactory <- cbind(species = species_list$species[i], age_structure_tally_satisfactory) #cbind one column with species name in it!!!!!
+  colnames(age_structure_tally_satisfactory) <- col_names
+  
+  #bind_rows length weight
+  length_width_tally_table_satisfactory <- rbind(length_width_tally_table_satisfactory, length_width_tally_satisfactory)
+  
+  #bind_rows age structure
+  age_structure_tally_table_satisfactory <- rbind(age_structure_tally_table_satisfactory, age_structure_tally_satisfactory)
+  
+  ############################################# 
+  #########    UNSATISFACTORY   ################# 
+  #############################################
+  length_width_tally_unsatisfactory <- dplyr::pull(table2_unsatisfactory, count_of_length_cm)
+  length_width_tally_unsatisfactory <- as.data.frame(t(length_width_tally_unsatisfactory))
+  length_width_tally_unsatisfactory <- cbind(species = species_list$species[i], length_width_tally_unsatisfactory) #cbind one column with species name in it!!!!!
+  colnames(length_width_tally_unsatisfactory) <- col_names
+  
+  #vector from tables for age structures
+  age_structure_tally_unsatisfactory <- dplyr::pull(table2_unsatisfactory, count_of_otosag_id)
+  age_structure_tally_unsatisfactory <- as.data.frame(t(age_structure_tally_unsatisfactory))
+  age_structure_tally_unsatisfactory <- cbind(species = species_list$species[i], age_structure_tally_unsatisfactory) #cbind one column with species name in it!!!!!
+  colnames(age_structure_tally_unsatisfactory) <- col_names
+  
+  #bind_rows length weight
+  length_width_tally_table_unsatisfactory <- rbind(length_width_tally_table_unsatisfactory, length_width_tally_unsatisfactory)
+  
+  #bind_rows age structure
+  age_structure_tally_table_unsatisfactory <- rbind(age_structure_tally_table_unsatisfactory, age_structure_tally_unsatisfactory)
   
   
   
   
+  ################################
+  #end for loop
   print(i)
   
 }
+
+#outside for loop, write tables
+#have to go back to the main directory
+setwd(base_dir)
+
+############################################# 
+#########    SATISFACTORY   ################# 
+#############################################
+
+
+write.csv(length_width_tally_table_satisfactory, paste0("length_width_tally_table_satisfactory_", year, ".csv"), row.names = FALSE)
+
+write.csv(age_structure_tally_table_satisfactory, paste0("age_structure_tally_table_satisfactory_", year, ".csv"), row.names = FALSE)
+
+#make main tables pretty
+formatted_length_width_satisfactory <- flextable::flextable(length_width_tally_table_satisfactory)
+formatted_length_width_satisfactory <- theme_vanilla(formatted_length_width_satisfactory)
+formatted_length_width_satisfactory <- set_header_labels(formatted_length_width_satisfactory,
+                                            values = list("species" = "Species"))
+
+#formatted_length_width
+save_as_image(formatted_length_width_satisfactory, path = paste0("formatted_length_width_tally_table_satisfactory_", year, ".png"))
+
+formatted_age_structure_satisfactory <- flextable::flextable(age_structure_tally_table_satisfactory)
+formatted_age_structure_satisfactory <- theme_vanilla(formatted_age_structure_satisfactory)
+formatted_age_structure_satisfactory <- set_header_labels(formatted_age_structure_satisfactory,
+                                             values = list("species" = "Species"))
+
+#formatted_age_structure
+save_as_image(formatted_age_structure_satisfactory, path = paste0("formatted_age_structure_tally_table_satisfactory_", year, ".png"))
+
+#and truncate main tables and make them pretty
+last_five_years <- tail(colnames(length_width_tally_table), 5)
+
+last_five_years_length_width_tally_table <- length_width_tally_table[,c("species", last_five_years)]
+
+write.csv(last_five_years_length_width_tally_table, paste0("last_five_years_length_width_tally_table_", year, ".csv"))
+
+last_five_years_age_structure_tally_table <- age_structure_tally_table[,c("species", last_five_years)]
+
+write.csv(last_five_years_age_structure_tally_table, paste0("last_five_years_age_structure_tally_table_", year, ".csv"))
+
+formatted_last_five_length_width <- flextable::flextable(last_five_years_length_width_tally_table)
+formatted_last_five_length_width <- theme_vanilla(formatted_last_five_length_width)
+formatted_last_five_length_width <- set_header_labels(formatted_last_five_length_width,
+                                                      values = list("species" = "Species"))
+
+#formatted_last_five_length_width
+save_as_image(formatted_last_five_length_width, path = paste0("formatted_last_five_years_length_width_tally_table_", year, ".png"))
+
+formatted_last_five_age_structure <- flextable::flextable(last_five_years_age_structure_tally_table)
+formatted_last_five_age_structure <- theme_vanilla(formatted_last_five_age_structure)
+formatted_last_five_age_structure <- set_header_labels(formatted_last_five_age_structure,
+                                                       values = list("species" = "Species"))
+
+#formatted_last_five_age_structure
+save_as_image(formatted_last_five_age_structure, path = "formatted_last_five_years_age_structure_tally_table_2025.png")
+
+############################################# 
+#########    UNSATISFACTORY   ################# 
+#############################################
 
