@@ -49,7 +49,7 @@ for (i in 1:10) {
   
   catch_all_test <- tryCatch({
     
-    message("Trying pull_catch() with standard_filtering = FALSE")
+    message("Trying pull_catch() for i =", i, "(",species_name, ") with standard_filtering = FALSE")
     
     catch_all <- pull_catch(
       common_name = species_list$species[i],
@@ -152,7 +152,7 @@ for (i in 1:10) {
                 greater_than_onehundredfifteen = sum(total_catch_numbers > 115)) %>%
       rename(year = "as.character(Year)")
     
-    write.csv(table1_unsatisfactory, paste0(species_name, "_table1.csv"), row.names = FALSE)
+    write.csv(table1_unsatisfactory, paste0(species_name, "_table1_unsatisfactory.csv"), row.names = FALSE)
     
     formatted_table1_unsatisfactory <- flextable::flextable(table1_unsatisfactory)
     formatted_table1_unsatisfactory <- theme_vanilla(formatted_table1_unsatisfactory)
@@ -177,7 +177,7 @@ for (i in 1:10) {
     ##################################################################
     
   }, error = function(e) {
-    message(paste("Pull_catch() with standard_filtering = FALSE resulted in an error for i =", i, "so using standard_filtering = TRUE"))
+    message(paste("Pull_catch() with standard_filtering = FALSE resulted in an error for i =", i, "(",species_name, ") so using standard_filtering = TRUE"))
     
     catch_all <- pull_catch(
       common_name = species_list$species[i],
@@ -217,7 +217,7 @@ for (i in 1:10) {
                 greater_than_onehundredfifteen = sum(total_catch_numbers > 115)) %>%
       rename(year = "as.character(Year)")
     
-    write.csv(table1_satisfactory, paste0(species_name, "_table1.csv"), row.names = FALSE)
+    write.csv(table1_satisfactory, paste0(species_name, "_table1_satisfactory.csv"), row.names = FALSE)
     
     formatted_table1_satisfactory <- flextable::flextable(table1_satisfactory)
     formatted_table1_satisfactory <- theme_vanilla(formatted_table1_satisfactory)
