@@ -49,7 +49,7 @@ for (i in 1:10) {
   
   catch_all_test <- tryCatch({
     
-    message("Trying pull_catch() for i =", i, "(",species_name, ") with standard_filtering = FALSE")
+    message("Trying pull_catch() for i =", i, " (",species_name,") with standard_filtering = FALSE")
     
     catch_all <- pull_catch(
       common_name = species_list$species[i],
@@ -177,7 +177,7 @@ for (i in 1:10) {
     ##################################################################
     
   }, error = function(e) {
-    message(paste("Pull_catch() with standard_filtering = FALSE resulted in an error for i =", i, "(",species_name, ") so using standard_filtering = TRUE"))
+    message(paste("Pull_catch() with standard_filtering = FALSE resulted in an error for i =", i, " (",species_name,") so using standard_filtering = TRUE"))
     
     catch_all <- pull_catch(
       common_name = species_list$species[i],
