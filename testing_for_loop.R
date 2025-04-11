@@ -31,9 +31,9 @@ colnames(age_structure_tally_table_unsatisfactory) <- col_names
 
 ##############################
 
-#for (i in 1:nrow(species_list)) {
+for (i in 1:nrow(species_list)) {
 
-for (i in 1:10) {
+#for (i in 1:10) {
   species_name <- species_list$species[i]
   species_name <- gsub(" ", "_", species_name)
   
@@ -294,7 +294,7 @@ for (i in 1:10) {
     table2_satisfactory <- merge(data.frame("year" = all_years), table2_satisfactory, by = "year", all.x = TRUE)
     
     #optional to have 0 instead of NA
-    #table2[is.na(table2)] <- 0
+    table2_satisfactory[is.na(table2_satisfactory)] <- 0
     
     write.csv(table2_satisfactory, paste0(species_name, "_table2_satisfactory.csv"), row.names = FALSE)
     
@@ -358,7 +358,7 @@ for (i in 1:10) {
     table2_unsatisfactory <- merge(data.frame("year" = all_years), table2_unsatisfactory, by = "year", all.x = TRUE)
     
     #optional to have 0 instead of NA
-    #table2[is.na(table2)] <- 0
+    table2_unsatisfactory[is.na(table2_unsatisfactory)] <- 0
     
     write.csv(table2_unsatisfactory, paste0(species_name, "_table2_unsatisfactory.csv"), row.names = FALSE)
     
@@ -581,33 +581,80 @@ formatted_age_structure_satisfactory <- set_header_labels(formatted_age_structur
 save_as_image(formatted_age_structure_satisfactory, path = paste0("formatted_age_structure_tally_table_satisfactory_", year, ".png"))
 
 #and truncate main tables and make them pretty
-last_five_years <- tail(colnames(length_width_tally_table), 5)
+last_five_years_satisfactory <- tail(colnames(length_width_tally_table_satisfactory), 5)
 
-last_five_years_length_width_tally_table <- length_width_tally_table[,c("species", last_five_years)]
+last_five_years_length_width_tally_table_satisfactory <- length_width_tally_table_satisfactory[,c("species", last_five_years_satisfactory)]
 
-write.csv(last_five_years_length_width_tally_table, paste0("last_five_years_length_width_tally_table_", year, ".csv"))
+write.csv(last_five_years_length_width_tally_table_satisfactory, paste0("last_five_years_length_width_tally_table_satisfactory_", year, ".csv"))
 
-last_five_years_age_structure_tally_table <- age_structure_tally_table[,c("species", last_five_years)]
+last_five_years_age_structure_tally_table_satisfactory <- age_structure_tally_table_satisfactory[,c("species", last_five_years_satisfactory)]
 
-write.csv(last_five_years_age_structure_tally_table, paste0("last_five_years_age_structure_tally_table_", year, ".csv"))
+write.csv(last_five_years_age_structure_tally_table_satisfactory, paste0("last_five_years_age_structure_tally_table_satisfactory_", year, ".csv"))
 
-formatted_last_five_length_width <- flextable::flextable(last_five_years_length_width_tally_table)
-formatted_last_five_length_width <- theme_vanilla(formatted_last_five_length_width)
-formatted_last_five_length_width <- set_header_labels(formatted_last_five_length_width,
+formatted_last_five_length_width_satisfactory <- flextable::flextable(last_five_years_length_width_tally_table_satisfactory)
+formatted_last_five_length_width_satisfactory <- theme_vanilla(formatted_last_five_length_width_satisfactory)
+formatted_last_five_length_width_satisfactory <- set_header_labels(formatted_last_five_length_width_satisfactory,
                                                       values = list("species" = "Species"))
 
 #formatted_last_five_length_width
-save_as_image(formatted_last_five_length_width, path = paste0("formatted_last_five_years_length_width_tally_table_", year, ".png"))
+save_as_image(formatted_last_five_length_width_satisfactory, path = paste0("formatted_last_five_years_length_width_tally_table_satisfactory_", year, ".png"))
 
-formatted_last_five_age_structure <- flextable::flextable(last_five_years_age_structure_tally_table)
-formatted_last_five_age_structure <- theme_vanilla(formatted_last_five_age_structure)
-formatted_last_five_age_structure <- set_header_labels(formatted_last_five_age_structure,
+formatted_last_five_age_structure_satisfactory <- flextable::flextable(last_five_years_age_structure_tally_table_satisfactory)
+formatted_last_five_age_structure_satisfactory <- theme_vanilla(formatted_last_five_age_structure_satisfactory)
+formatted_last_five_age_structure_satisfactory <- set_header_labels(formatted_last_five_age_structure_satisfactory,
                                                        values = list("species" = "Species"))
 
 #formatted_last_five_age_structure
-save_as_image(formatted_last_five_age_structure, path = "formatted_last_five_years_age_structure_tally_table_2025.png")
+save_as_image(formatted_last_five_age_structure_satisfactory, path = paste0("formatted_last_five_years_age_structure_tally_table_satisfactory_", year, ".png"))
 
 ############################################# 
 #########    UNSATISFACTORY   ################# 
 #############################################
+write.csv(length_width_tally_table_unsatisfactory, paste0("length_width_tally_table_unsatisfactory_", year, ".csv"), row.names = FALSE)
+
+write.csv(age_structure_tally_table_unsatisfactory, paste0("age_structure_tally_table_unsatisfactory_", year, ".csv"), row.names = FALSE)
+
+#make main tables pretty
+formatted_length_width_unsatisfactory <- flextable::flextable(length_width_tally_table_unsatisfactory)
+formatted_length_width_unsatisfactory <- theme_vanilla(formatted_length_width_unsatisfactory)
+formatted_length_width_unsatisfactory <- set_header_labels(formatted_length_width_unsatisfactory,
+                                                         values = list("species" = "Species"))
+
+#formatted_length_width
+save_as_image(formatted_length_width_unsatisfactory, path = paste0("formatted_length_width_tally_table_unsatisfactory_", year, ".png"))
+
+formatted_age_structure_unsatisfactory <- flextable::flextable(age_structure_tally_table_unsatisfactory)
+formatted_age_structure_unsatisfactory <- theme_vanilla(formatted_age_structure_unsatisfactory)
+formatted_age_structure_unsatisfactory <- set_header_labels(formatted_age_structure_unsatisfactory,
+                                                          values = list("species" = "Species"))
+
+#formatted_age_structure
+save_as_image(formatted_age_structure_unsatisfactory, path = paste0("formatted_age_structure_tally_table_unsatisfactory_", year, ".png"))
+
+#and truncate main tables and make them pretty
+last_five_years_unsatisfactory <- tail(colnames(length_width_tally_table_unsatisfactory), 5)
+
+last_five_years_length_width_tally_table_unsatisfactory <- length_width_tally_table_unsatisfactory[,c("species", last_five_years_unsatisfactory)]
+
+write.csv(last_five_years_length_width_tally_table_unsatisfactory, paste0("last_five_years_length_width_tally_table_unsatisfactory_", year, ".csv"))
+
+last_five_years_age_structure_tally_table_unsatisfactory <- age_structure_tally_table_unsatisfactory[,c("species", last_five_years_unsatisfactory)]
+
+write.csv(last_five_years_age_structure_tally_table_unsatisfactory, paste0("last_five_years_age_structure_tally_table_unsatisfactory_", year, ".csv"))
+
+formatted_last_five_length_width_unsatisfactory <- flextable::flextable(last_five_years_length_width_tally_table_unsatisfactory)
+formatted_last_five_length_width_unsatisfactory <- theme_vanilla(formatted_last_five_length_width_unsatisfactory)
+formatted_last_five_length_width_unsatisfactory <- set_header_labels(formatted_last_five_length_width_unsatisfactory,
+                                                      values = list("species" = "Species"))
+
+#formatted_last_five_length_width
+save_as_image(formatted_last_five_length_width_unsatisfactory, path = paste0("formatted_last_five_years_length_width_tally_table_unsatisfactory_", year, ".png"))
+
+formatted_last_five_age_structure_unsatisfactory <- flextable::flextable(last_five_years_age_structure_tally_table_unsatisfactory)
+formatted_last_five_age_structure_unsatisfactory <- theme_vanilla(formatted_last_five_age_structure_unsatisfactory)
+formatted_last_five_age_structure_unsatisfactory <- set_header_labels(formatted_last_five_age_structure_unsatisfactory,
+                                                       values = list("species" = "Species"))
+
+#formatted_last_five_age_structure
+save_as_image(formatted_last_five_age_structure_unsatisfactory, path = paste0("formatted_last_five_years_age_structure_tally_table_unsatisfactory_", year, ".png"))
 
