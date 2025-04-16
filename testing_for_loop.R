@@ -79,6 +79,15 @@ for (i in 1:nrow(species_list)) {
     
     save_as_image(formatted_table0_satisfactory, path = paste0(species_name, "_formatted_table0_satisfactory.png"))
     
+  #PART OF TABLE 1
+    table1_satisfactory_part_1 <- catch_all %>%
+      filter(Performance == "Satisfactory")%>%
+      group_by(as.character(Year)) %>%
+      summarise(total_tows = length(Trawl_id),
+                zero = sum(total_catch_numbers == 0),
+                greater_than_zero = sum(total_catch_numbers > 0))    
+    
+    
     #TABLE 1   
     table1_satisfactory <- catch_all %>%
       filter(Performance == "Satisfactory")%>%
@@ -277,6 +286,135 @@ for (i in 1:nrow(species_list)) {
     ############################################# 
     #########    SATISFACTORY   ################# 
     #############################################
+    #TABLE 1  
+    table1_satisfactory_part_2 <- bio_all_samples %>%
+      filter(performance == "Satisfactory") %>%
+      group_by(as.character(trawl_id)) %>%
+      summarise(numbered_measured_per_tow = length(length_cm))
+
+    table1_satisfactory_part_2 <- bio_all_samples %>%
+      filter(performance == "Satisfactory") %>%
+      group_by(as.character(trawl_id)) %>%
+      summarise(year = mean(as.numeric(year)),
+                numbered_measured_per_tow = length(length_cm))
+    
+    table1_satisfactory_part_2 <- bio_all_samples %>%
+      filter(performance == "Satisfactory") %>%
+      group_by(as.character(trawl_id)) %>%
+      summarise(year = mean(as.numeric(year)),
+                numbered_measured_per_tow = length(length_cm)) 
+                
+#THIS WORKS!!!!!!!!!!!!!!!!!!!!!!!!    
+    table1_satisfactory_part_2_test <- bio_all_samples %>%
+      filter(performance == "Satisfactory") %>%
+      group_by(as.character(trawl_id)) %>%
+      summarise(year = mean(as.numeric(year)),
+                numbered_measured_per_tow = length(length_cm)) %>%
+      group_by(as.character(year)) %>%
+      summarise(one_to_five = sum(numbered_measured_per_tow > 0 & numbered_measured_per_tow < 6),
+                six_to_ten = sum(numbered_measured_per_tow > 5 & numbered_measured_per_tow < 11),
+                eleven_to_twenty = sum(numbered_measured_per_tow > 10 & numbered_measured_per_tow < 21),
+                twentyone_to_thirtyfive = sum(numbered_measured_per_tow > 20 & numbered_measured_per_tow < 36),
+                thirtysix_to_fiftyfive = sum(numbered_measured_per_tow > 35 & numbered_measured_per_tow < 56),
+                fiftysix_to_eightyfive = sum(numbered_measured_per_tow > 55 & numbered_measured_per_tow < 86),
+                eightysix_to_onehundredfifteen = sum(numbered_measured_per_tow > 65 & numbered_measured_per_tow < 116),
+                greater_than_onehundredfifteen = sum(numbered_measured_per_tow > 115))
+    
+    
+    table1_satisfactory_part_3 <- table1_satisfactory_part_2 %>%
+      group_by(as.character(year)) %>%
+      summarise(one_to_five = sum(numbered_measured_per_tow > 0 & numbered_measured_per_tow < 6))
+    
+          
+      
+      group_by(as.character(trawl_id)) %>%
+      summarise(year = mean(as.numeric(year)),
+                total_good_bio = length(length_cm)) %>%
+      group_by(as.character(year))%>%
+      summarise(one_to_five = sum(length(length_cm) > 0 & length(length_cm) < 6)),
+                six_to_ten = sum(total_catch_numbers > 5 & total_catch_numbers < 11),
+                eleven_to_twenty = sum(total_catch_numbers > 10 & total_catch_numbers < 21),
+                twentyone_to_thirtyfive = sum(total_catch_numbers > 20 & total_catch_numbers < 36),
+                thirtysix_to_fiftyfive = sum(total_catch_numbers > 35 & total_catch_numbers < 56),
+                fiftysix_to_eightyfive = sum(total_catch_numbers > 55 & total_catch_numbers < 86),
+                eightysix_to_onehundredfifteen = sum(total_catch_numbers > 65 & total_catch_numbers < 116),
+                greater_than_onehundredfifteen = sum(total_catch_numbers > 115))
+                
+    
+    
+    table1_satisfactory_part_2 <- bio_all_samples %>%
+      filter(performance == "Satisfactory") %>%
+      group_by(as.character(year)) %>%
+      summarise(total_good_bio = length(unique(trawl_id)),
+                #zero = sum(total_catch_numbers == 0),
+                #greater_than_zero = sum(total_catch_numbers > 0),
+                one_to_five = sum(length(unique(trawl_id)) > 0 & length(unique(trawl_id)) < 6),
+                six_to_ten = sum(total_catch_numbers > 5 & total_catch_numbers < 11),
+                eleven_to_twenty = sum(total_catch_numbers > 10 & total_catch_numbers < 21),
+                twentyone_to_thirtyfive = sum(total_catch_numbers > 20 & total_catch_numbers < 36),
+                thirtysix_to_fiftyfive = sum(total_catch_numbers > 35 & total_catch_numbers < 56),
+                fiftysix_to_eightyfive = sum(total_catch_numbers > 55 & total_catch_numbers < 86),
+                eightysix_to_onehundredfifteen = sum(total_catch_numbers > 65 & total_catch_numbers < 116),
+                greater_than_onehundredfifteen = sum(total_catch_numbers > 115))
+      
+    
+    
+    table1_satisfactory <- bio_all_samples %>%
+      filter(performance == "Satisfactory")%>%
+      group_by(as.character(year)) %>%
+      #mutate(total_measured = sum(!is.na(length_cm)))
+    #group_by(as.character(year)) %>%
+      summarise(total_good_bio = count(length_cm),
+                zero = sum(total_catch_numbers == 0),
+                greater_than_zero = sum(total_catch_numbers > 0),
+                one_to_five = sum(total_catch_numbers > 0 & total_catch_numbers < 6),
+                six_to_ten = sum(total_catch_numbers > 5 & total_catch_numbers < 11),
+                eleven_to_twenty = sum(total_catch_numbers > 10 & total_catch_numbers < 21),
+                twentyone_to_thirtyfive = sum(total_catch_numbers > 20 & total_catch_numbers < 36),
+                thirtysix_to_fiftyfive = sum(total_catch_numbers > 35 & total_catch_numbers < 56),
+                fiftysix_to_eightyfive = sum(total_catch_numbers > 55 & total_catch_numbers < 86),
+                eightysix_to_onehundredfifteen = sum(total_catch_numbers > 65 & total_catch_numbers < 116),
+                greater_than_onehundredfifteen = sum(total_catch_numbers > 115)) %>%
+      rename(year = "as.character(Year)")
+    
+    
+    #TABLE 1   
+    table1_satisfactory <- bio_all_samples %>%
+      filter(performance == "Satisfactory")%>%
+      group_by(as.character(trawl_id)) %>%
+      mutate(total_measured = sum(!is.na(length_cm)))
+      group_by(as.character(year)) %>%
+      summarise(zero = sum(total_catch_numbers == 0),
+                greater_than_zero = sum(total_catch_numbers > 0),
+                one_to_five = sum(total_catch_numbers > 0 & total_catch_numbers < 6),
+                six_to_ten = sum(total_catch_numbers > 5 & total_catch_numbers < 11),
+                eleven_to_twenty = sum(total_catch_numbers > 10 & total_catch_numbers < 21),
+                twentyone_to_thirtyfive = sum(total_catch_numbers > 20 & total_catch_numbers < 36),
+                thirtysix_to_fiftyfive = sum(total_catch_numbers > 35 & total_catch_numbers < 56),
+                fiftysix_to_eightyfive = sum(total_catch_numbers > 55 & total_catch_numbers < 86),
+                eightysix_to_onehundredfifteen = sum(total_catch_numbers > 65 & total_catch_numbers < 116),
+                greater_than_onehundredfifteen = sum(total_catch_numbers > 115)) %>%
+      rename(year = "as.character(Year)")
+    
+    write.csv(table1_satisfactory, paste0(species_name, "_table1_satisfactory.csv"), row.names = FALSE)
+    
+    formatted_table1_satisfactory <- flextable::flextable(table1_satisfactory)
+    formatted_table1_satisfactory <- theme_vanilla(formatted_table1_satisfactory)
+    formatted_table1_satisfactory <- set_header_labels(formatted_table1_satisfactory,
+                                                       values = list("year" = "Year",
+                                                                     "zero" = "Total no catch",
+                                                                     "greater_than_zero" = "Total > 0",
+                                                                     "one_to_five" = "1 to 5",
+                                                                     "six_to_ten" = "6 to 10",
+                                                                     "eleven_to_twenty" = "11 to 20",
+                                                                     "twentyone_to_thirtyfive" = "21 to 35",
+                                                                     "thirtysix_to_fiftyfive" = "36 to 55",
+                                                                     "fiftysix_to_eightyfive" = "56 to 85",
+                                                                     "eightysix_to_onehundredfifteen" = "86 to 115",
+                                                                     "greater_than_onehundredfifteen" = "> 115"))
+    
+    save_as_image(formatted_table1_satisfactory, path = paste0(species_name, "_formatted_table1_satisfactory.png"))
+    
     
     
     #TABLE 2
@@ -658,3 +796,6 @@ formatted_last_five_age_structure_unsatisfactory <- set_header_labels(formatted_
 #formatted_last_five_age_structure
 save_as_image(formatted_last_five_age_structure_unsatisfactory, path = paste0("formatted_last_five_years_age_structure_tally_table_unsatisfactory_", year, ".png"))
 
+###########################
+#NEED TO MAKE A TABLE WITH 2024 CUMULATIVE LENGTHS FOR ALL SPECIES
+#AND A TABLE THAT IS 2003 TO 2024 AVERAGES (SO FOR EACH FOR LOOP, JUST A LINE THAT CAN BE C BIND)
