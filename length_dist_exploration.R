@@ -228,6 +228,7 @@ print(p_overlay)
 ###############################################################
 density_data_all <- data.frame(matrix(ncol = 3, nrow = 0))
 colnames(density_data_all) <- c("Length_cm", "standardized_density", "Common_name")
+#have to add trawl ID
 
 for (i in 1:nrow(species_list)) {
 #for (i in 1:10) {
@@ -248,6 +249,8 @@ for (i in 1:nrow(species_list)) {
     p <- ggplot(bio_length, aes(x = Length_cm)) +
       geom_histogram(aes(y = after_stat(density)), binwidth = 1, alpha = 0.1, color = "black", fill = "grey") +
       theme_classic()
+    
+    #MAKE A FOLDER FOR THESE PLOTS
     
     computed_data <- ggplot_build(p)$data[[1]]
     
@@ -290,12 +293,125 @@ print(p_overlay)
 
 #print(p_overlay_color)
 
+#### 
+#same thing for depth
+#have to have trawl ID in density table also
+#then merge or maybe depth is already there
+#DEPTH IS THERE, SO JUST DO ONE THAT IS DEPTH FREQUENCY DISTRIBTUION
+#and another that is length by depth 
 
 
+#############################################################################
+###############################################################
+############################################################
+length_depth_all <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(length_depth_all) <- c("Common_name", "Length_cm", "Depth_m")
 
+length_density_data_all <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(length_density_data_all) <- c("Length_cm", "length_standardized_density", "Common_name")
 
+depth_density_data_all <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(depth_density_data_all) <- c("Depth_m", "depth_standardized_density", "Common_name")
 
+#to consider: pretty density plots like red hind paper
 
+#for (i in 1:nrow(species_list)) {
+  for (i in 1:10) {
+  species_name <- species_list$species[i]
+  species_name_clean <- gsub(" ", "_", species_name)
+  
+  bio_all <- pull_bio(
+    common_name = species_name,
+    survey = "NWFSC.Combo",
+    standard_filtering = FALSE
+  )
+  
+  # Only proceed if >100 obs AND common name contains "rockfish"
+  if (nrow(bio_all) > 100 && grepl("rockfish", species_name, ignore.case = TRUE)) {
+    
+    bio_length_depth <- bio_all[, c("Common_name", "Length_cm", "Depth_m")]
+    
+    #rbind this to a larger dataframe for length by depth analysis
+    length_depth_all <- rbind(length_depth_all, bio_length_depth)
+
+    #MAKE A FOLDER FOR THESE PLOTS by species
+    
+    ##########LENGTH
+    
+    l <- ggplot(bio_length_depth, aes(x = Length_cm)) +
+      geom_histogram(aes(y = after_stat(density)), binwidth = 1, alpha = 0.1, color = "black", fill = "grey") +
+      theme_classic()
+    
+    length_output_data <- ggplot_build(l)$data[[1]]
+    
+    length_max_density <- max(length_output_data$density)
+    length_output_data$length_density_standardized <- length_output_data$density / length_max_density
+    
+    length_density_data <- length_output_data[, c("x", "length_density_standardized")]
+    length_density_data$Common_name <- species_name_clean
+    
+    colnames(length_density_data) <- c("Length_cm", "length_standardized_density", "Common_name")
+    
+    length_density_data_all <- rbind(length_density_data_all, length_density_data)
+    
+    ####### DEPTH ##########
+    
+    d <- ggplot(bio_length_depth, aes(x = Depth_m)) +
+      geom_histogram(aes(y = after_stat(density)), binwidth = 10, alpha = 0.1, color = "black", fill = "grey") +
+      theme_classic()
+    
+    depth_output_data <- ggplot_build(d)$data[[1]]
+    
+    depth_max_density <- max(depth_output_data$density)
+    depth_output_data$depth_density_standardized <- depth_output_data$density / depth_max_density
+    
+    depth_density_data <- depth_output_data[, c("x", "depth_density_standardized")]
+    depth_density_data$Common_name <- species_name_clean
+    
+    colnames(depth_density_data) <- c("Depth_m", "depth_standardized_density", "Common_name")
+    
+    depth_density_data_all <- rbind(depth_density_data_all, depth_density_data)
+    
+    
+    print(paste("Included:", species_name, "| n =", nrow(bio_all)))
+  } else {
+    print(paste("Skipped:", species_name, "| n =", nrow(bio_all)))
+  }
+  
+  print(i)
+}
+
+l_overlay <- ggplot(length_density_data_all, aes(x = Length_cm, y = length_standardized_density, fill = Common_name)) +
+  geom_col(width = 1, alpha = 0.2, position = "identity") +
+  scale_fill_manual(values = rep("grey", length(unique(length_density_data_all$Common_name)))) +
+  labs(title = "Overlayed Standardized Length Frequency Histograms (Max Density = 1 each species)",
+       x = "Length (cm)",
+       y = "Density (standardized)") +
+  theme_classic()+
+  theme(legend.position = "none")
+
+print(l_overlay)
+
+d_overlay <- ggplot(depth_density_data_all, aes(x = Depth_m, y = depth_standardized_density, fill = Common_name)) +
+  geom_col(width = 10, alpha = 0.2, position = "identity") +
+  scale_fill_manual(values = rep("grey", length(unique(depth_density_data_all$Common_name)))) +
+  labs(title = "Overlayed Standardized Depth Frequency Histograms (Max Density = 1 each species)",
+       x = "Depth (m)",
+       y = "Density (standardized)") +
+  theme_classic()+
+  theme(legend.position = "none")
+
+print(d_overlay)
+
+l_d <- ggplot(length_depth_all, aes(x = Depth_m, y = Length_cm, fill = Common_name)) +
+  geom_point()
+  geom_col(width = 10, alpha = 0.2, position = "identity") +
+  scale_fill_manual(values = rep("grey", length(unique(depth_density_data_all$Common_name)))) +
+  labs(title = "Overlayed Standardized Depth Frequency Histograms (Max Density = 1 each species)",
+       x = "Depth (m)",
+       y = "Density (standardized)") +
+  theme_classic()+
+  theme(legend.position = "none")
 
 
 
