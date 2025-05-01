@@ -574,6 +574,61 @@ l_d <- ggplot(length_depth_all, aes(x = Depth_m, y = Length_cm, fill = Scientifi
     theme(legend.position = "none")
   
 
+#############################################
+  #H&L
+  
+hookline <- read.csv("length_freq/qryGrandUnifiedThru2024_ToCLAIRE_DWarehouse version_04182025.csv")
+
+  l <- ggplot(hookline, aes(x = length_cm)) +
+    geom_histogram(binwidth = 1, alpha = 0.1, color = "black", fill = "grey") +
+    theme_classic()
+  
+
+  # Compute histograms per species
+  hist_data <- hookline %>%
+    group_by(common_name, length_cm = floor(length_cm)) %>%
+    tally() %>%
+    group_by(common_name) %>%
+    mutate(
+      density = n / sum(n),
+      standardized_density = density / max(density)
+    ) %>%
+    ungroup()
+  
+  
+hist_hookline <-  ggplot(hist_data, aes(x = length_cm, y = standardized_density, fill = common_name)) +
+    geom_col(position = "identity", alpha = 0.2, width = 1) +
+    scale_fill_manual(values = rep("grey", length(unique(hist_data$common_name)))) +
+    scale_x_continuous(breaks = seq(0, max(hist_data$length_cm, na.rm = TRUE), by = 25)) +
+    theme_classic() +
+    theme(legend.position = "none") +
+    labs(
+      x = "Length (cm)",
+      y = "Standardized Density",
+      #title = "Overlayed Length Distributions (Max Density = 1 per species)"
+    )
+
+hist_data_depth <- hookline %>%
+  group_by(common_name, drop_depth_meters = floor(drop_depth_meters)) %>%
+  tally() %>%
+  group_by(common_name) %>%
+  mutate(
+    density = n / sum(n),
+    standardized_density = density / max(density)
+  ) %>%
+  ungroup()
 
 
+hist_hookline_depth <-  ggplot(hist_data_depth, aes(x = drop_depth_meters, y = standardized_density, fill = common_name)) +
+  geom_col(position = "identity", alpha = 0.2, width = 1) +
+  scale_fill_manual(values = rep("grey", length(unique(hist_data_depth$common_name)))) +
+  scale_x_continuous(breaks = seq(0, max(hist_data_depth$drop_depth_meters, na.rm = TRUE), by = 50)) +
+  theme_classic() +
+  theme(legend.position = "none") +
+  labs(
+    x = "Drop depth (m)",
+    y = "Standardized Density",
+    #title = "Overlayed Length Distributions (Max Density = 1 per species)"
+  )
 
+  
