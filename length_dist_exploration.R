@@ -5,6 +5,11 @@ library(ggplot2)
 
 species_list <- read.csv("species_list_2025.csv")
 
+species_all <- nwfscSurvey::pull_spp()
+#sebastes_species <- species_all |> 
+#  select(latin) |>
+#  contains("Sebastes")
+
 species_name <- species_list$species[i]
 species_name <- gsub(" ", "_", species_name)
 
@@ -305,31 +310,47 @@ print(p_overlay)
 ###############################################################
 ############################################################
 length_depth_all <- data.frame(matrix(ncol = 3, nrow = 0))
-colnames(length_depth_all) <- c("Common_name", "Length_cm", "Depth_m")
+colnames(length_depth_all) <- c("Scientific_name", "Length_cm", "Depth_m")
 
 length_density_data_all <- data.frame(matrix(ncol = 3, nrow = 0))
-colnames(length_density_data_all) <- c("Length_cm", "length_standardized_density", "Common_name")
+colnames(length_density_data_all) <- c("Length_cm", "length_standardized_density", "Scientific_name")
 
 depth_density_data_all <- data.frame(matrix(ncol = 3, nrow = 0))
-colnames(depth_density_data_all) <- c("Depth_m", "depth_standardized_density", "Common_name")
+colnames(depth_density_data_all) <- c("Depth_m", "depth_standardized_density", "Scientific_name")
 
 #to consider: pretty density plots like red hind paper
 
+species_all <- nwfscSurvey::pull_spp()
+species_Sebastes <- species_all %>%
+  filter(grepl("Sebastes", latin))
 #for (i in 1:nrow(species_list)) {
-  for (i in 1:10) {
-  species_name <- species_list$species[i]
-  species_name_clean <- gsub(" ", "_", species_name)
+for (i in 1:nrow(species_Sebastes)) {
+#  for (i in 1:10) {
+  ##species_name <- species_list$species[i]
+  species_name <- species_Sebastes$latin[i]
+  species_name_write <- species_Sebastes$scientific_name[i]
+  #species_name_clean <- gsub(" ", "_", species_name)
   
+  bio_all_test <- tryCatch({
+    
+    message("Trying pull_bio() for i =", i, " (",species_name,")") 
+    
   bio_all <- pull_bio(
-    common_name = species_name,
+    #common_name = species_name,
+    sci_name = species_name,
     survey = "NWFSC.Combo",
     standard_filtering = FALSE
   )
   
-  # Only proceed if >100 obs AND common name contains "rockfish"
-  if (nrow(bio_all) > 100 && grepl("rockfish", species_name, ignore.case = TRUE)) {
+  }, error = function(e) {
+    message(paste("Pull_bio() not available for",species_name))
     
-    bio_length_depth <- bio_all[, c("Common_name", "Length_cm", "Depth_m")]
+    
+  
+  # Only proceed if >100 obs AND common name contains "rockfish"
+  ##if (nrow(bio_all) > 100 && grepl("rockfish", species_name, ignore.case = TRUE)) {
+  if (nrow(bio_all) > 100 && grepl("Sebastes", species_name, ignore.case = TRUE)) {   
+    bio_length_depth <- bio_all[, c("Scientific_name", "Length_cm", "Depth_m")]
     
     #rbind this to a larger dataframe for length by depth analysis
     length_depth_all <- rbind(length_depth_all, bio_length_depth)
@@ -348,9 +369,9 @@ colnames(depth_density_data_all) <- c("Depth_m", "depth_standardized_density", "
     length_output_data$length_density_standardized <- length_output_data$density / length_max_density
     
     length_density_data <- length_output_data[, c("x", "length_density_standardized")]
-    length_density_data$Common_name <- species_name_clean
+    length_density_data$Scientific_name <- species_name
     
-    colnames(length_density_data) <- c("Length_cm", "length_standardized_density", "Common_name")
+    colnames(length_density_data) <- c("Length_cm", "length_standardized_density", "Scientific_name")
     
     length_density_data_all <- rbind(length_density_data_all, length_density_data)
     
@@ -366,9 +387,9 @@ colnames(depth_density_data_all) <- c("Depth_m", "depth_standardized_density", "
     depth_output_data$depth_density_standardized <- depth_output_data$density / depth_max_density
     
     depth_density_data <- depth_output_data[, c("x", "depth_density_standardized")]
-    depth_density_data$Common_name <- species_name_clean
+    depth_density_data$Scientific_name <- species_name
     
-    colnames(depth_density_data) <- c("Depth_m", "depth_standardized_density", "Common_name")
+    colnames(depth_density_data) <- c("Depth_m", "depth_standardized_density", "Scientific_name")
     
     depth_density_data_all <- rbind(depth_density_data_all, depth_density_data)
     
@@ -381,9 +402,9 @@ colnames(depth_density_data_all) <- c("Depth_m", "depth_standardized_density", "
   print(i)
 }
 
-l_overlay <- ggplot(length_density_data_all, aes(x = Length_cm, y = length_standardized_density, fill = Common_name)) +
+l_overlay <- ggplot(length_density_data_all, aes(x = Length_cm, y = length_standardized_density, fill = Scientific_name)) +
   geom_col(width = 1, alpha = 0.2, position = "identity") +
-  scale_fill_manual(values = rep("grey", length(unique(length_density_data_all$Common_name)))) +
+  scale_fill_manual(values = rep("grey", length(unique(length_density_data_all$Scientific_name)))) +
   labs(title = "Overlayed Standardized Length Frequency Histograms (Max Density = 1 each species)",
        x = "Length (cm)",
        y = "Density (standardized)") +
@@ -392,9 +413,9 @@ l_overlay <- ggplot(length_density_data_all, aes(x = Length_cm, y = length_stand
 
 print(l_overlay)
 
-d_overlay <- ggplot(depth_density_data_all, aes(x = Depth_m, y = depth_standardized_density, fill = Common_name)) +
+d_overlay <- ggplot(depth_density_data_all, aes(x = Depth_m, y = depth_standardized_density, fill = Scientific_name)) +
   geom_col(width = 10, alpha = 0.2, position = "identity") +
-  scale_fill_manual(values = rep("grey", length(unique(depth_density_data_all$Common_name)))) +
+  scale_fill_manual(values = rep("grey", length(unique(depth_density_data_all$Scientific_name)))) +
   labs(title = "Overlayed Standardized Depth Frequency Histograms (Max Density = 1 each species)",
        x = "Depth (m)",
        y = "Density (standardized)") +
@@ -403,10 +424,10 @@ d_overlay <- ggplot(depth_density_data_all, aes(x = Depth_m, y = depth_standardi
 
 print(d_overlay)
 
-l_d <- ggplot(length_depth_all, aes(x = Depth_m, y = Length_cm, fill = Common_name)) +
+l_d <- ggplot(length_depth_all, aes(x = Depth_m, y = Length_cm, fill = Scientific_name)) +
   geom_point()
   geom_col(width = 10, alpha = 0.2, position = "identity") +
-  scale_fill_manual(values = rep("grey", length(unique(depth_density_data_all$Common_name)))) +
+  scale_fill_manual(values = rep("grey", length(unique(depth_density_data_all$Scientific_name)))) +
   labs(title = "Overlayed Standardized Depth Frequency Histograms (Max Density = 1 each species)",
        x = "Depth (m)",
        y = "Density (standardized)") +
