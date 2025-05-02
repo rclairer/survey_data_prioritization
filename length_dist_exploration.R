@@ -631,4 +631,31 @@ hist_hookline_depth <-  ggplot(hist_data_depth, aes(x = drop_depth_meters, y = s
     #title = "Overlayed Length Distributions (Max Density = 1 per species)"
   )
 
-  
+
+
+#
+length_less250 <- filter(length_depth_all, Depth_m < 250)
+l <- ggplot(length_less250, aes(x = Length_cm)) +
+  geom_histogram(aes(y = after_stat(density)), binwidth = 1, alpha = 0.1, color = "black", fill = "grey") +
+  theme_classic() 
+
+l <- ggplot(length_less250, aes(x = Length_cm)) +
+  geom_histogram(binwidth = 1, alpha = 0.1, color = "black", fill = "grey") +
+  scale_x_continuous(limits = c(0,115))+
+  theme_classic() 
+
+hookline_rockfish <- hookline %>%
+  #change name of Bacaccio to Bacaccio Rockfish & Chilipepper to Chilipepper Rockfish & Cowcod to Cowcod Rockfish and Treefish to Treefish Rockfish
+  mutate(common_name = case_when(
+    common_name == "Bacaccio" ~ "Bacaccio Rockfish",
+    common_name == "Chilipepper" ~ "Chilipepper Rockfish",
+    common_name == "Cowcod" ~ "Cowcod Rockfish",
+    common_name == "Treefish" ~ "Treefish Rockfish",
+    TRUE ~ common_name
+  )) %>%
+  filter(grepl("Rockfish", common_name))
+
+l_hookline_rockfish <- ggplot(hookline_rockfish, aes(x = length_cm)) +
+  geom_histogram(binwidth = 1, alpha = 0.1, color = "black", fill = "grey") +
+  scale_x_continuous(limits = c(0,115))+
+  theme_classic()
