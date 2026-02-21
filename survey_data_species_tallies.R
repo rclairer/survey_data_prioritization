@@ -42,8 +42,8 @@ age_structure_tally_table <- data.frame(matrix(ncol = length(col_names), nrow = 
 colnames(age_structure_tally_table) <- col_names
 ##########################
 
-catch_species <- sort(unique(wcgbts_catch$Common_name)) #is blue and deacon an issue here? no postive catch and no bio
-bio_species <- sort(unique(wcgbts_bio$Common_name))
+catch_species <- sort(unique(wcgbts_catch$Common_name)) #is blue and deacon an issue here? no positive catch and no bio
+#bio_species <- sort(unique(wcgbts_bio$Common_name))
 
 species_list <- catch_species
 #for (i in 1:nrow(species_list)) {
@@ -67,7 +67,7 @@ for (i in 1:5) {
   
   #TABLE 0    
   table0_satisfactory <- catch %>%
-#    dplyr::filter(Performance == "Satisfactory") %>% #check if there are any unsatisfactory tows
+    dplyr::filter(Performance == "Satisfactory") %>% #check if there are any unsatisfactory tows
     dplyr::group_by(as.character(Year)) %>%
     dplyr::summarise(satisfactory_tows = length(Trawl_id)) %>%
     dplyr::rename(year = "as.character(Year)")
@@ -84,7 +84,7 @@ for (i in 1:5) {
   
   #TABLE 1   
   table1_satisfactory <- catch %>%
-#    dplyr::filter(Performance == "Satisfactory")%>% #check if there are any unsatisfactory tows
+    dplyr::filter(Performance == "Satisfactory")%>% #check if there are any unsatisfactory tows
     dplyr::group_by(as.character(Year)) %>%
     dplyr::summarise(zero = sum(total_catch_numbers == 0),
               greater_than_zero = sum(total_catch_numbers > 0),
@@ -98,7 +98,7 @@ for (i in 1:5) {
               greater_than_onehundredfifteen = sum(total_catch_numbers > 115)) %>%
     dplyr::rename(year = "as.character(Year)")
   
-  write.csv(table1_satisfactory, paste0(species_name, "_table1.csv"), row.names = FALSE)
+  write.csv(table1_satisfactory, paste0(species_name, "_table1_satisfactory.csv"), row.names = FALSE)
   
   formatted_table1_satisfactory <- flextable::flextable(table1_satisfactory)
   formatted_table1_satisfactory <- flextable::theme_vanilla(formatted_table1_satisfactory)
@@ -116,23 +116,108 @@ for (i in 1:5) {
                                                                    "greater_than_onehundredfifteen" = "> 115"))
   
   flextable::save_as_image(formatted_table1_satisfactory, path = paste0(species_name, "_formatted_table1_satisfactory.png"))
- 
-#  bio <- wcgbts_bio %>%
-#    dplyr::filter(Common_name == species_name)  
-  
-#  bio <- bio[c("Length_cm", "Otosag_id", "Performance", "Scientific_name", "Trawl_id", "Width_cm", "Year")]
-#  colnames(bio) <- c("length_cm", "otosag_id", "performance", "scientific_name", "trawl_id", "width_cm", "year") #to match bio samples
-  
-#  bio_samples = pull_biological_samples(
-#    common_name = species_list[i],
-#    survey = "NWFSC.Combo",
-#    standard_filtering = FALSE)
-  
-#  bio_samples <- bio_samples[c("left_pectoral_fin_id", "length_cm", "otosag_id", "ovary_id", "performance", "scientific_name", "stomach_id", "tissue_id", "trawl_id", "width_cm", "year")]
-  
-#  bio_all_samples <- left_join(bio_all, bio_samples, by = c("length_cm", "otosag_id", "performance", "scientific_name", "trawl_id", "width_cm", "year"))
-  
-  
-  
-   
+
+bio <- wcgbts_bio %>%
+  dplyr::filter(Common_name == species)
+
+#TABLE 2
+table2_satisfactory <- bio %>%
+  dplyr::filter(Performance == "Satisfactory") %>% #check if there are any unsatisfactory tows
+  group_by(as.character(Year)) %>%
+  summarise(count_of_length_cm = sum(!is.na(Length_cm)),
+            count_of_otosag_id = sum(!is.na(Otosag_id))) %>%
+  rename(year = "as.character(Year)")
+
+table2_satisfactory <- merge(data.frame("year" = all_years), table2_satisfactory, by = "year", all.x = TRUE)
+
+#optional to have 0 instead of NA
+table2_satisfactory[is.na(table2_satisfactory)] <- 0
+
+write.csv(table2_satisfactory, paste0(species_name, "_table2_satisfactory.csv"), row.names = FALSE)
+
+formatted_table2_satisfactory <- flextable::flextable(table2_satisfactory)
+formatted_table2_satisfactory <- flextable::theme_vanilla(formatted_table2_satisfactory)
+formatted_table2_satisfactory <- flextable::set_header_labels(formatted_table2_satisfactory,
+                                                   values = list("year" = "Year",
+                                                                 "count_of_length_cm" = "Count of length_cm",
+                                                                 "count_of_otosag_id" = "Count of otosag_id"))
+
+flextable::save_as_image(formatted_table2_satisfactory, path = paste0(species_name, "_formatted_table2_satisfactory.png"))
+
+#add to main table
+#vector from tables for length weight
+length_width_tally <- dplyr::pull(table2_satisfactory, count_of_length_cm)
+length_width_tally <- as.data.frame(t(length_width_tally))
+length_width_tally <- cbind(species = species_list[i], length_width_tally) #cbind one column with species name in it!!!!!
+colnames(length_width_tally) <- col_names
+
+#vector from tables for age structures
+age_structure_tally <- dplyr::pull(table2_satisfactory, count_of_otosag_id)
+age_structure_tally <- as.data.frame(t(age_structure_tally))
+age_structure_tally <- cbind(species = species_list[i], age_structure_tally) #cbind one column with species name in it!!!!!
+colnames(age_structure_tally) <- col_names
+
+#bind_rows length weight
+length_width_tally_table <- rbind(length_width_tally_table, length_width_tally)
+
+#bind_rows age structure
+age_structure_tally_table <- rbind(age_structure_tally_table, age_structure_tally)
+
+print(i)
+    
 }
+
+#outside for loop, write tables
+#have to go back to the main directory
+setwd(base_dir)
+
+write.csv(length_width_tally_table, paste0("length_width_tally_table_", year, ".csv"), row.names = FALSE)
+
+write.csv(age_structure_tally_table, paste0("age_structure_tally_table_", year, ".csv"), row.names = FALSE)
+
+#make main tables pretty
+formatted_length_width <- flextable::flextable(length_width_tally_table)
+formatted_length_width <- theme_vanilla(formatted_length_width)
+formatted_length_width <- set_header_labels(formatted_length_width,
+                                            values = list("species" = "Species"))
+
+#formatted_length_width
+save_as_image(formatted_length_width, path = paste0("formatted_length_width_tally_table_", year, ".png"))
+
+formatted_age_structure <- flextable::flextable(age_structure_tally_table)
+formatted_age_structure <- theme_vanilla(formatted_age_structure)
+formatted_age_structure <- set_header_labels(formatted_age_structure,
+                                             values = list("species" = "Species"))
+
+#formatted_age_structure
+save_as_image(formatted_age_structure, path = paste0("formatted_age_structure_tally_table_", year, ".png"))
+
+#and truncate main tables and make them pretty
+last_five_years <- tail(colnames(length_width_tally_table), 5)
+
+last_five_years_length_width_tally_table <- length_width_tally_table[,c("species", last_five_years)]
+
+write.csv(last_five_years_length_width_tally_table, paste0("last_five_years_length_width_tally_table_", year, ".csv"))
+
+last_five_years_age_structure_tally_table <- age_structure_tally_table[,c("species", last_five_years)]
+
+write.csv(last_five_years_age_structure_tally_table, paste0("last_five_years_age_structure_tally_table_", year, ".csv"))
+
+formatted_last_five_length_width <- flextable::flextable(last_five_years_length_width_tally_table)
+formatted_last_five_length_width <- theme_vanilla(formatted_last_five_length_width)
+formatted_last_five_length_width <- set_header_labels(formatted_last_five_length_width,
+                                                      values = list("species" = "Species"))
+
+#formatted_last_five_length_width
+save_as_image(formatted_last_five_length_width, path = paste0("formatted_last_five_years_length_width_tally_table_", year, ".png"))
+
+formatted_last_five_age_structure <- flextable::flextable(last_five_years_age_structure_tally_table)
+formatted_last_five_age_structure <- theme_vanilla(formatted_last_five_age_structure)
+formatted_last_five_age_structure <- set_header_labels(formatted_last_five_age_structure,
+                                                       values = list("species" = "Species"))
+
+#formatted_last_five_age_structure
+save_as_image(formatted_last_five_age_structure, path = "formatted_last_five_years_age_structure_tally_table_2025.png")
+
+
+
