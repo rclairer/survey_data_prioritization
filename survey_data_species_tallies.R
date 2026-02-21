@@ -19,7 +19,6 @@ source(here::here("R", "clean_wcgbts_bio.R"))
 
 #run functions
 data <- pull_wcgbts(dir = dir, species = species, load = TRUE)
-#didn't seem to filter data by species list... which I guess makes sense, there is no filter in the function
 
 species <- get_species_list()
 
