@@ -2,7 +2,7 @@ library(shiny)
 
 ui <- shiny::fluidPage(
   
-  shiny::titlePanel("Age structure tally"),
+  shiny::titlePanel("Length and age structure tallies"),
   
   shiny::sidebarLayout(
     shiny::sidebarPanel(
@@ -16,7 +16,14 @@ ui <- shiny::fluidPage(
     ),
       
     shiny::mainPanel(
-      shiny::tableOutput("table")
+          shiny::fluidRow(
+            column(width = 6,
+                   h4("Length tally"),
+                   shiny::tableOutput("length_tally"))
+          ),
+            column(width = 6,
+                   h4("Age structure tally"),
+                   tableOutput("age_structure_tally"))
     )
   )
 )

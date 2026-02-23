@@ -4,14 +4,20 @@ library(dplyr)
 
 server <- function(input, output, session) {
   
-  data <- read.csv(
+  length_data <- read.csv(
+    here::here("2026", "length_tally_table_2026.csv"),
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  )
+  
+  age_structure_data <- read.csv(
     here::here("2026", "age_structure_tally_table_2026.csv"),
     check.names = FALSE,
     stringsAsFactors = FALSE
   )
   
   #extract year columns
-  year_cols <- names(data)[-1]
+  year_cols <- names(length_data)[-1]
   years <- as.numeric(year_cols)
   year_lookup <- setNames(year_cols, years)
   
@@ -21,8 +27,8 @@ server <- function(input, output, session) {
     shiny::checkboxGroupInput(
       "species",
       "Select species:",
-      choices = data$species,
-      selected = data$species
+      choices = length_data$species,
+      selected = length_data$species
     )
   })
 #dynamically create year slider
@@ -41,15 +47,15 @@ server <- function(input, output, session) {
   
   shiny::observeEvent(input$toggle_all, {
     shiny::req(input$species)
-    if (length(input$species) < length(data$species)){
-      shiny::updateCheckboxGroupInput(session, "species", selected = data$species)
+    if (length(input$species) < length(length_data$species)){
+      shiny::updateCheckboxGroupInput(session, "species", selected = length_data$species)
     } else {
       shiny::updateCheckboxGroupInput(session, "species", selected = character(0))
     }
   })
   
 
-  filtered_data <- shiny::reactive({
+  length_tally_data <- shiny::reactive({
     
     shiny::req(input$species, input$year_range)
     
@@ -57,13 +63,32 @@ server <- function(input, output, session) {
     
     actual_cols <- na.omit(year_lookup[as.character(selected_years)])
     
-  data %>%
+  length_data %>%
     dplyr::filter(species %in% input$species) %>%
     dplyr::select(species, all_of(actual_cols))
     
   })
   
-  output$table <- shiny::renderTable({
-    filtered_data()
+  age_structure_tally_data <- shiny::reactive({
+    
+    shiny::req(input$species, input$year_range)
+    
+    selected_years <- seq(input$year_range[1], input$year_range[2])
+    
+    actual_cols <- na.omit(year_lookup[as.character(selected_years)])
+    
+    age_structure_data %>%
+      dplyr::filter(species %in% input$species) %>%
+      dplyr::select(species, all_of(actual_cols))
+    
   })
+  
+  output$length_tally <- shiny::renderTable({
+    length_tally_data()
+  })
+  
+  output$age_structure_tally <- shiny::renderTable({
+    age_structure_tally_data()
+  })
+  
 }
