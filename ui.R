@@ -7,6 +7,8 @@ ui <- shiny::fluidPage(
   shiny::sidebarLayout(
     shiny::sidebarPanel(
       
+      shiny::actionButton("toggle_all", "Select/Deselect All"),
+      
       shiny::uiOutput("species_ui"),
       
       shiny::uiOutput("year_ui")

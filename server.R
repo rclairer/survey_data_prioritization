@@ -17,22 +17,18 @@ server <- function(input, output, session) {
   
 #species checkboxes
   
-  output$species_ui <- renderUI({
-    checkboxGroupInput(
+  output$species_ui <- shiny::renderUI({
+    shiny::checkboxGroupInput(
       "species",
       "Select species:",
       choices = data$species,
-      selected = data$species #default
+      selected = data$species
     )
-    
   })
-  
 #dynamically create year slider
   
   output$year_ui <- shiny::renderUI({
-    
-
-  shiny::sliderInput(
+    shiny::sliderInput(
     "year_range",
     "Select year range:",
     min = min(years),
@@ -43,6 +39,16 @@ server <- function(input, output, session) {
   
   })
   
+  shiny::observeEvent(input$toggle_all, {
+    shiny::req(input$species)
+    if (length(input$species) < length(data$species)){
+      shiny::updateCheckboxGroupInput(session, "species", selected = data$species)
+    } else {
+      shiny::updateCheckboxGroupInput(session, "species", selected = character(0))
+    }
+  })
+  
+
   filtered_data <- shiny::reactive({
     
     shiny::req(input$species, input$year_range)
@@ -57,7 +63,7 @@ server <- function(input, output, session) {
     
   })
   
-  output$table <- renderTable({
+  output$table <- shiny::renderTable({
     filtered_data()
   })
 }
