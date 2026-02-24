@@ -7,6 +7,14 @@ ui <- shiny::fluidPage(
   shiny::sidebarLayout(
     shiny::sidebarPanel(
       
+      shiny::checkboxGroupInput(
+        "table_type",
+        "Display:",
+        choices = c("Length" = "length",
+                    "Age" = "age"),
+        selected = c("length", "age")
+      ),
+      
       shiny::uiOutput("year_ui"),
       
       shiny::actionButton("toggle_all", "Select/deselect all species"),
@@ -16,11 +24,7 @@ ui <- shiny::fluidPage(
     ),
       
     shiny::mainPanel(
-          h4("Length tally"),
-          shiny::tableOutput("length_tally"),
-          hr(),
-          h4("Age structure tally"),
-          shiny::tableOutput("age_structure_tally")
+          shiny::uiOutput("dynamic_content")
     )
   )
 )
