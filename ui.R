@@ -16,14 +16,11 @@ ui <- shiny::fluidPage(
     ),
       
     shiny::mainPanel(
-          shiny::fluidRow(
-            column(width = 6,
-                   h4("Length tally"),
-                   shiny::tableOutput("length_tally"))
-          ),
-            column(width = 6,
-                   h4("Age structure tally"),
-                   tableOutput("age_structure_tally"))
+          h4("Length tally"),
+          shiny::tableOutput("length_tally"),
+          hr(),
+          h4("Age structure tally"),
+          shiny::tableOutput("age_structure_tally")
     )
   )
 )
