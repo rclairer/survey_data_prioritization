@@ -42,7 +42,7 @@ colnames(age_structure_tally_table) <- col_names
 ##########################
 
 catch_species <- sort(unique(wcgbts_catch$Common_name)) #is blue and deacon an issue here? no positive catch and no bio
-write.csv(catch_species, paste0("species_", year, ".csv"))
+write.csv(catch_species, file.path(paste0("2026/Data/species_", year, ".csv")))
 #bio_species <- sort(unique(wcgbts_bio$Common_name))
 
 species_list <- catch_species
