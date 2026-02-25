@@ -23,14 +23,14 @@ server <- function(input, output, session) {
   years <- as.numeric(year_cols)
   year_lookup <- setNames(year_cols, years)
   
-#species checkboxes
+#Species checkboxes
   
   output$species_ui <- shiny::renderUI({
     shiny::checkboxGroupInput(
-      "species",
+      "Species",
       "Select species:",
-      choices = length_data$species,
-      selected = length_data$species
+      choices = length_data$Species,
+      selected = length_data$Species
     )
   })
 #dynamically create year slider
@@ -48,40 +48,40 @@ server <- function(input, output, session) {
   })
   
   shiny::observeEvent(input$toggle_all, {
-    shiny::req(input$species)
-    if (length(input$species) < length(length_data$species)){
-      shiny::updateCheckboxGroupInput(session, "species", selected = length_data$species)
+    shiny::req(input$Species)
+    if (length(input$Species) < length(length_data$Species)){
+      shiny::updateCheckboxGroupInput(session, "Species", selected = length_data$Species)
     } else {
-      shiny::updateCheckboxGroupInput(session, "species", selected = character(0))
+      shiny::updateCheckboxGroupInput(session, "Species", selected = character(0))
     }
   })
   
 
   length_tally_data <- shiny::reactive({
     
-    shiny::req(input$species, input$year_range)
+    shiny::req(input$Species, input$year_range)
     
     selected_years <- seq(input$year_range[1], input$year_range[2])
     
     actual_cols <- na.omit(year_lookup[as.character(selected_years)])
     
   length_data %>%
-    dplyr::filter(species %in% input$species) %>%
-    dplyr::select(species, all_of(actual_cols))
+    dplyr::filter(Species %in% input$Species) %>%
+    dplyr::select(Species, all_of(actual_cols))
     
   })
   
   age_structure_tally_data <- shiny::reactive({
     
-    shiny::req(input$species, input$year_range)
+    shiny::req(input$Species, input$year_range)
     
     selected_years <- seq(input$year_range[1], input$year_range[2])
     
     actual_cols <- na.omit(year_lookup[as.character(selected_years)])
     
     age_structure_data %>%
-      dplyr::filter(species %in% input$species) %>%
-      dplyr::select(species, all_of(actual_cols))
+      dplyr::filter(Species %in% input$Species) %>%
+      dplyr::select(Species, all_of(actual_cols))
     
   })
   
@@ -100,7 +100,7 @@ server <- function(input, output, session) {
     
     df_long <- df |> 
       tidyr::pivot_longer(
-        cols = -species,
+        cols = -Species,
         names_to = "year",
         values_to = "value"
       ) |>
@@ -109,8 +109,8 @@ server <- function(input, output, session) {
     ggplot2::ggplot(df_long,
                     ggplot2::aes(x = year,
                                  y = value,
-                                 color = species,
-                                 group = species)) +
+                                 color = Species,
+                                 group = Species)) +
       ggplot2::geom_line(linewidth = 1.2) +
       ggplot2::geom_point(size = 2) +
       ggplot2::labs(
@@ -134,7 +134,7 @@ server <- function(input, output, session) {
     
     df_long <- df |> 
       tidyr::pivot_longer(
-        cols = -species,
+        cols = -Species,
         names_to = "year",
         values_to = "value"
       ) |>
@@ -143,8 +143,8 @@ server <- function(input, output, session) {
     ggplot2::ggplot(df_long,
                     ggplot2::aes(x = year,
                                  y = value,
-                                 color = species,
-                                 group = species)) +
+                                 color = Species,
+                                 group = Species)) +
       ggplot2::geom_line(linewidth = 1.2) +
       ggplot2::geom_point(size = 2) +
       ggplot2::labs(

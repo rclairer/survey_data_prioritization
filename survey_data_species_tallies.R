@@ -113,9 +113,8 @@ for (i in 1:length(species_list)) {
       dplyr::summarise(., dplyr::across(-Year, mean)) %>%
       dplyr::mutate(Year = "Average across years") %>%
       dplyr::select(Year, everything())
-    )
-  
-  #round everything to whole number
+    ) %>%
+    dplyr::mutate(across(where(is.numeric), ~round(.x, digits = 0)))
   
   colnames(table1_satisfactory) <- tow_tally_table_col_names[-1]
   
@@ -238,6 +237,8 @@ formatted_last_five_age_structure <- flextable::theme_vanilla(formatted_last_fiv
 #formatted_last_five_age_structure
 flextable::save_as_image(formatted_last_five_age_structure, path = paste0("formatted_last_five_years_age_structure_tally_table", year, ".png"))
 
+tow_tally_table <- tow_tally_table %>%
+  dplyr::select(-Year)
 write.csv(tow_tally_table, paste0("tow_tally_table_", year, ".csv"), row.names = FALSE)
 
 formatted_tow_tally_table <- flextable::flextable(tow_tally_table)
@@ -246,6 +247,8 @@ formatted_tow_tally_table <- flextable::theme_vanilla(formatted_tow_tally_table)
 #formatted_tow_tally
 flextable::save_as_image(formatted_tow_tally_table, path = paste0("formatted_tow_tally_table", year, ".png"))
 
+average_tow_tally_table <- average_tow_tally_table %>%
+  dplyr::select(-Year)
 write.csv(average_tow_tally_table, paste0("average_across_years_tow_tally_table_", year, ".csv"), row.names = FALSE)
 
 formatted_average_tow_tally_table <- flextable::flextable(average_tow_tally_table)
