@@ -42,7 +42,7 @@ colnames(age_structure_tally_table) <- col_names
 
 #blank cumulative length tally by number of tows table
 tow_tally_table <- data.frame(matrix(ncol = 15, nrow = 0))
-tow_tally_table_col_names <- c("Species", "Year", "Total no catch", "Total postive catch", "< 10", "10 to 19", "20 to 29", "30 to 39", "40 to 49", "50 to 59", "60 to 69", "70 to 79", "80 to 89", "90 to 99", "> 100")
+tow_tally_table_col_names <- c("Species", "Year", "Total no catch", "Total postive catch", "< 10", "10 to 19", "20 to 29", "30 to 39", "40 to 49", "50 to 59", "60 to 69", "70 to 79", "80 to 89", "90 to 99", "> 99")
 colnames(tow_tally_table) <- tow_tally_table_col_names
 
 #black average cumulative length tally by number of rows table
@@ -107,13 +107,15 @@ for (i in 1:length(species_list)) {
               seventy_to_seventynine = sum(total_catch_numbers > 70 & total_catch_numbers < 80),
               eighty_to_eightynine = sum(total_catch_numbers > 80 & total_catch_numbers < 90),
               ninety_to_ninetynine = sum(total_catch_numbers > 90 & total_catch_numbers < 100), #includes 99
-              onehundred_and_greater = sum(total_catch_numbers > 99)) %>% #one hundred and greater
+              greater_than_ninetynine = sum(total_catch_numbers > 99)) %>% #one hundred and greater
       dplyr::rename(Year = "as.character(Year)") %>%
       dplyr::bind_rows(
       dplyr::summarise(., dplyr::across(-Year, mean)) %>%
       dplyr::mutate(Year = "Average across years") %>%
       dplyr::select(Year, everything())
     )
+  
+  #round everything to whole number
   
   colnames(table1_satisfactory) <- tow_tally_table_col_names[-1]
   
