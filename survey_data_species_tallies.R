@@ -257,3 +257,6 @@ formatted_average_tow_tally_table <- flextable::theme_vanilla(formatted_average_
 #formatted_tow_tally
 flextable::save_as_image(formatted_average_tow_tally_table, path = paste0("formatted_average_across_years_tow_tally_table", year, ".png"))
 
+#############################
+#hook and line
+
