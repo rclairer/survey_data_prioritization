@@ -3,25 +3,35 @@ library(shiny)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(readr)
+library(DT)
 
 server <- function(input, output, session) {
   
-  length_data <- read.csv(
+  length_data <- readr::read_csv(
     here::here("2026", "length_tally_table_2026.csv"),
-    check.names = FALSE,
-    stringsAsFactors = FALSE
-  )
-  
-  age_structure_data <- read.csv(
-    here::here("2026", "age_structure_tally_table_2026.csv"),
-    check.names = FALSE,
-    stringsAsFactors = FALSE
+    #check.names = FALSE,
+    #stringsAsFactors = FALSE
   )
   
   #extract year columns
   year_cols <- names(length_data)[-1]
   years <- as.numeric(year_cols)
   year_lookup <- setNames(year_cols, years)
+  
+  age_structure_data <- readr::read_csv(
+    here::here("2026", "age_structure_tally_table_2026.csv"),
+    #check.names = FALSE,
+    #stringsAsFactors = FALSE
+  )
+  
+  tows_targets_year <- readr::read_csv(
+    here::here("2026", "tows_targets_2026.csv")
+  )
+    
+  tows_targets_average <- readr::read_csv(
+    here::here("2026", "average_across_years_tows_targets_2026.csv")
+  )
   
 #Species checkboxes
   
@@ -187,5 +197,6 @@ server <- function(input, output, session) {
     do.call(tagList, content)
   })
   
-    
+
+      
 }
