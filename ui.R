@@ -3,7 +3,7 @@ library(gt)
 
 ui <- shiny::fluidPage(
   
-  shiny::titlePanel("FRS survey sampling protocol"),
+  shiny::titlePanel("FRS survey sampling protocol review"),
   
   shiny::tabsetPanel(
     
@@ -36,7 +36,20 @@ ui <- shiny::fluidPage(
     
     shiny::tabPanel(
         "Targets and catch per tow tallies",
-        gt::gt_output("tows_targets")
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            shiny::selectInput(
+              inputId = "table_choice",
+              label = "Display:",
+              choices = c("2025 catch per tow tallies" = "tows_targets",
+                          "Average (across all years) catch per tow tallies" = "tows_targets_average"),
+              selected = "tows_targets"
+            )
+          ),
+          shiny::mainPanel(
+        gt::gt_output("tows_targets_table")
     )
   )
+)
+)
 )

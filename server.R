@@ -197,8 +197,10 @@ server <- function(input, output, session) {
     do.call(tagList, content)
   })
   
-output$tows_targets <- render_gt({
-  dat <- tows_targets_year
+output$tows_targets_table <- render_gt({
+  dat <- switch(input$table_choice,
+                "tows_targets" = tows_targets_year,
+                "tows_targets_average" = tows_targets_average)
   
   gt_tbl <- dat %>% gt()
   
