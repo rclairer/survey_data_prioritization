@@ -1,11 +1,16 @@
 library(shiny)
+library(DT)
 
 ui <- shiny::fluidPage(
   
-  shiny::titlePanel("Length and age structure tallies"),
+  shiny::titlePanel("FRS survey sampling protocol"),
   
-  shiny::sidebarLayout(
-    shiny::sidebarPanel(
+  shiny::tabsetPanel(
+    
+    shiny::tabPanel(
+      "Length and age structure tallies",
+        shiny::sidebarLayout(
+        shiny::sidebarPanel(
       
       shiny::checkboxGroupInput(
         "table_type",
@@ -24,7 +29,14 @@ ui <- shiny::fluidPage(
     ),
       
     shiny::mainPanel(
-          shiny::uiOutput("dynamic_content")
+      shiny::uiOutput("dynamic_content")
+    )
+  )
+),
+    
+    shiny::tabPanel(
+        "Cumulative tows and targets",
+        DT::DTOutput("tows_targets")
     )
   )
 )

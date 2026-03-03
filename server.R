@@ -8,10 +8,10 @@ library(DT)
 
 server <- function(input, output, session) {
   
-  length_data <- readr::read_csv(
+  length_data <- read.csv(
     here::here("2026", "length_tally_table_2026.csv"),
-    #check.names = FALSE,
-    #stringsAsFactors = FALSE
+    check.names = FALSE,
+    stringsAsFactors = FALSE
   )
   
   #extract year columns
@@ -19,18 +19,18 @@ server <- function(input, output, session) {
   years <- as.numeric(year_cols)
   year_lookup <- setNames(year_cols, years)
   
-  age_structure_data <- readr::read_csv(
+  age_structure_data <- read.csv(
     here::here("2026", "age_structure_tally_table_2026.csv"),
-    #check.names = FALSE,
-    #stringsAsFactors = FALSE
+    check.names = FALSE,
+    stringsAsFactors = FALSE
   )
   
   tows_targets_year <- readr::read_csv(
-    here::here("2026", "tows_targets_2026.csv")
+    here::here("2026", "tows_targets_2026.csv"), show_col_types = FALSE
   )
     
   tows_targets_average <- readr::read_csv(
-    here::here("2026", "average_across_years_tows_targets_2026.csv")
+    here::here("2026", "average_across_years_tows_targets_2026.csv"), show_col_types = FALSE
   )
   
 #Species checkboxes
@@ -197,6 +197,39 @@ server <- function(input, output, session) {
     do.call(tagList, content)
   })
   
-
+output$tows_targets <- DT::renderDT({
+  dat <- tows_targets_year
+  #bin_cols <- colnames(dat[,6:16])
+  
+  dt <- DT::datatable(dat, options = list(dom = 't', scrollY = "500px", paging = FALSE))
+  
+#  for(col in bin_cols){
+#    if(grepl("^<", col)) {
+#      lower <- as.numeric(sub("<", "", col))
+#      upper <- 0
+#    } else if (grepl("^>", col)) {
+#      lower <- as.numeric(sub(">", "", col))
+#      upper <- Inf
+#    } else {
+#      bounds <- strsplit(col, " to ")[[1]]
+#      lower <- as.numeric(bounds[1])
+#      upper <- as.numeric(bounds[2])
+#    }
+  
+#    highlight_rows <- dat$`2025 length targets` >= lower & dat$`2025 length targets` <= upper
+    
+#    bg_colors <- ifelse(highlight_rows, "#ffe599", NA)
+    
+#    dt <- dt %>% DT::formatStyle(
+#      columns = col,
+#      backgroundColor = bg_colors,
+#      fontWeight = ifelse(highlight_rows, "bold", "normal")
+#    )
+     
+#  }
+ 
+#  dt
+  
+  })
       
 }
