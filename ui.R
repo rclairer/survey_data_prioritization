@@ -1,5 +1,5 @@
 library(shiny)
-library(DT)
+library(gt)
 
 ui <- shiny::fluidPage(
   
@@ -35,8 +35,8 @@ ui <- shiny::fluidPage(
 ),
     
     shiny::tabPanel(
-        "Cumulative tows and targets",
-        DT::DTOutput("tows_targets")
+        "Targets and catch per tow tallies",
+        gt::gt_output("tows_targets")
     )
   )
 )

@@ -4,7 +4,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(readr)
-library(DT)
+library(gt)
 
 server <- function(input, output, session) {
   
@@ -197,39 +197,56 @@ server <- function(input, output, session) {
     do.call(tagList, content)
   })
   
-output$tows_targets <- DT::renderDT({
+output$tows_targets <- render_gt({
   dat <- tows_targets_year
-  #bin_cols <- colnames(dat[,6:16])
   
-  dt <- DT::datatable(dat, options = list(dom = 't', scrollY = "500px", paging = FALSE))
+  gt_tbl <- dat %>% gt()
   
-#  for(col in bin_cols){
-#    if(grepl("^<", col)) {
-#      lower <- as.numeric(sub("<", "", col))
-#      upper <- 0
-#    } else if (grepl("^>", col)) {
-#      lower <- as.numeric(sub(">", "", col))
-#      upper <- Inf
-#    } else {
-#      bounds <- strsplit(col, " to ")[[1]]
-#      lower <- as.numeric(bounds[1])
-#      upper <- as.numeric(bounds[2])
-#    }
+  bin_cols <- colnames(dat[,6:16])
   
-#    highlight_rows <- dat$`2025 length targets` >= lower & dat$`2025 length targets` <= upper
+  for(col in bin_cols){
     
-#    bg_colors <- ifelse(highlight_rows, "#ffe599", NA)
+    #col <- bin_cols[2]
+    #print(col)
     
-#    dt <- dt %>% DT::formatStyle(
-#      columns = col,
-#      backgroundColor = bg_colors,
-#      fontWeight = ifelse(highlight_rows, "bold", "normal")
-#    )
-     
-#  }
- 
-#  dt
+    if(grepl("^<", col)) {
+      lower <- as.numeric(sub("<", "", col))
+      upper <- 0
+    } else if (grepl("^>", col)) {
+      lower <- as.numeric(sub(">", "", col))
+      upper <- Inf
+    } else {
+      bounds <- strsplit(col, " to ")[[1]]
+      lower <- as.numeric(bounds[1])
+      upper <- as.numeric(bounds[2])
+    }
   
+    highlight_rows <- which(dat$`2025 length targets` >= lower & dat$`2025 length targets` <= upper)
+    
+    if(length(highlight_rows) >0 ) {
+      gt_tbl <- gt_tbl %>%
+        gt::tab_style(
+          style = cell_fill(color = "#ffe599"),
+          locations = cells_body(
+            columns = col,
+            rows = highlight_rows
+          )
+        )
+    }
+  }
+
+  gt_tbl <- gt_tbl %>%
+    gt::tab_style(
+      style = cell_text(weight = "bold", font = "Arial", size = px(14)),
+      locations = cells_column_labels(everything())
+    ) %>%
+    gt::tab_style(
+      style = cell_text(font = "Arial", size = px(12)),
+      locations = cells_body(everything())
+    )
+  
+   gt_tbl 
+   
   })
       
 }
