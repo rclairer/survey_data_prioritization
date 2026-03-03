@@ -50,8 +50,8 @@ average_tow_tally_table <- data.frame(matrix(ncol = 15, nrow = 0))
 colnames(average_tow_tally_table) <- tow_tally_table_col_names
 ##########################
 
-catch_species <- sort(unique(wcgbts_catch$Common_name)) #is blue and deacon an issue here? no positive catch and no bio
-#write.csv(catch_species, file.path(paste0("2026/Data/species_", year, ".csv")))
+catch_species <- sort(unique(wcgbts_catch$Common_name))
+#readr::write_csv(catch_species, file = paste0("2026/Data/species_", year, ".csv"))
 #bio_species <- sort(unique(wcgbts_bio$Common_name))
 
 species_list <- catch_species
@@ -81,7 +81,7 @@ for (i in 1:length(species_list)) {
     dplyr::summarise(satisfactory_tows = length(Trawl_id)) %>%
     dplyr::rename(year = "as.character(Year)")
   
-  write.csv(table0_satisfactory, paste0(species_name, "_table0_satisfactory.csv"), row.names = FALSE)
+  readr::write_csv(table0_satisfactory, paste0(species_name, "_table0_satisfactory.csv"))
   
   formatted_table0_satisfactory <- flextable::flextable(table0_satisfactory)
   formatted_table0_satisfactory <- flextable::theme_vanilla(formatted_table0_satisfactory)
@@ -118,7 +118,7 @@ for (i in 1:length(species_list)) {
   
   colnames(table1_satisfactory) <- tow_tally_table_col_names[-1]
   
-  write.csv(table1_satisfactory, paste0(species_name, "_table1_satisfactory.csv"), row.names = FALSE)
+  readr::write_csv(table1_satisfactory, paste0(species_name, "_table1_satisfactory.csv"))
   
   formatted_table1_satisfactory <- flextable::flextable(table1_satisfactory)
   formatted_table1_satisfactory <- flextable::theme_vanilla(formatted_table1_satisfactory)
@@ -142,7 +142,7 @@ table2_satisfactory <- merge(data.frame("year" = all_years), table2_satisfactory
 #optional to have 0 instead of NA
 table2_satisfactory[is.na(table2_satisfactory)] <- 0
 
-write.csv(table2_satisfactory, paste0(species_name, "_table2_satisfactory.csv"), row.names = FALSE)
+readr::write_csv(table2_satisfactory, paste0(species_name, "_table2_satisfactory.csv"))
 
 formatted_table2_satisfactory <- flextable::flextable(table2_satisfactory)
 formatted_table2_satisfactory <- flextable::theme_vanilla(formatted_table2_satisfactory)
@@ -197,9 +197,9 @@ print(species)
 #have to go back to the main directory
 setwd(here::here("2026"))
 
-write.csv(length_tally_table, paste0("length_tally_table_", year, ".csv"), row.names = FALSE)
+readr::write_csv(length_tally_table, paste0("length_tally_table_", year, ".csv"))
 
-write.csv(age_structure_tally_table, paste0("age_structure_tally_table_", year, ".csv"), row.names = FALSE)
+readr::write_csv(age_structure_tally_table, paste0("age_structure_tally_table_", year, ".csv"))
 
 #make main tables pretty
 formatted_length <- flextable::flextable(length_tally_table)
@@ -219,11 +219,11 @@ last_five_years <- tail(colnames(length_tally_table), 5)
 
 last_five_years_length_tally_table <- length_tally_table[,c("Species", last_five_years)]
 
-write.csv(last_five_years_length_tally_table, paste0("last_five_years_length_tally_table_", year, ".csv"), row.names = FALSE)
+readr::write_csv(last_five_years_length_tally_table, paste0("last_five_years_length_tally_table_", year, ".csv"))
 
 last_five_years_age_structure_tally_table <- age_structure_tally_table[,c("Species", last_five_years)]
 
-write.csv(last_five_years_age_structure_tally_table, paste0("last_five_years_age_structure_tally_table_", year, ".csv"), row.names = FALSE)
+readr::write_csv(last_five_years_age_structure_tally_table, paste0("last_five_years_age_structure_tally_table_", year, ".csv"))
 
 formatted_last_five_length <- flextable::flextable(last_five_years_length_tally_table)
 formatted_last_five_length <- flextable::theme_vanilla(formatted_last_five_length)
@@ -239,7 +239,7 @@ flextable::save_as_image(formatted_last_five_age_structure, path = paste0("forma
 
 tow_tally_table <- tow_tally_table %>%
   dplyr::select(-Year)
-write.csv(tow_tally_table, paste0("tow_tally_table_", year, ".csv"), row.names = FALSE)
+readr::write_csv(tow_tally_table, paste0("tow_tally_table_", year, ".csv"))
 
 formatted_tow_tally_table <- flextable::flextable(tow_tally_table)
 formatted_tow_tally_table <- flextable::theme_vanilla(formatted_tow_tally_table)
@@ -249,13 +249,38 @@ flextable::save_as_image(formatted_tow_tally_table, path = paste0("formatted_tow
 
 average_tow_tally_table <- average_tow_tally_table %>%
   dplyr::select(-Year)
-write.csv(average_tow_tally_table, paste0("average_across_years_tow_tally_table_", year, ".csv"), row.names = FALSE)
+readr::write_csv(average_tow_tally_table, paste0("average_across_years_tow_tally_table_", year, ".csv"))
 
 formatted_average_tow_tally_table <- flextable::flextable(average_tow_tally_table)
 formatted_average_tow_tally_table <- flextable::theme_vanilla(formatted_average_tow_tally_table)
 
 #formatted_tow_tally
 flextable::save_as_image(formatted_average_tow_tally_table, path = paste0("formatted_average_across_years_tow_tally_table", year, ".png"))
+
+#length and age targets with cumulative tows tables
+
+wcgbts_length_targets <- readr::read_csv(here::here("2026", "data", "wcgbts_length_targets_2025.csv"))
+colnames(wcgbts_length_targets) <- c("Species", "2025 length targets")
+
+wcgbts_age_targets <- readr::read_csv(here::here("2026", "data", "wcgbts_age_targets_2025.csv"))
+colnames(wcgbts_age_targets) <- c("Species", "2025 age targets")
+
+wcgbts_targets <- dplyr::left_join(wcgbts_length_targets, wcgbts_age_targets, tow_tally_table_use, by = "Species")
+
+#last year's catch
+tow_tally_table_year <- readr::read_csv(here::here("2026", "tow_tally_table_2026.csv"))
+
+wcgbts_tows_targets_year <- dplyr::left_join(wcgbts_targets, tow_tally_table_year, by = "Species")
+readr::write_csv(wcgbts_tows_targets_year, file = paste0("2026/tows_targets_", year, ".csv"))
+
+#average catch
+tow_tally_table_average <- readr::read_csv(here::here("2026", "average_across_years_tow_tally_table_2026.csv"))
+
+wcgbts_tows_targets_average <- dplyr::left_join(wcgbts_targets, tow_tally_table_average, by = "Species")
+readr::write_csv(wcgbts_tows_targets_average, file = paste0("2026/average_across_years_tows_targets_", year, ".csv"))
+
+
+
 
 #############################
 #hook and line
