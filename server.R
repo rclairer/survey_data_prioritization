@@ -412,10 +412,10 @@ output$hkls_age_structure_plot <- shiny::renderPlot({
 output$hkls_dynamic_content <- renderUI({
   shiny::req(input$hkls_table_type)
   
-  content <- list()
+  hkls_content <- list()
   
-  if("hkls_length" %in% input$hkl_table_type) {
-    content <- append(content, list(
+  if("hkls_length" %in% input$hkls_table_type) {
+    hkls_content <- append(hkls_content, list(
       h4("Length tally"),
       shiny::tableOutput("hkls_length_tally"),
       shiny::plotOutput("hkls_length_plot"),
@@ -425,14 +425,14 @@ output$hkls_dynamic_content <- renderUI({
   }
   
   if("hkls_age" %in% input$hkls_table_type) {
-    content <- append(content, list(
+    hkls_content <- append(hkls_content, list(
       h4("Age structure tally"),
       shiny::tableOutput("hkls_age_structure_tally"),
       shiny::plotOutput("hkls_age_structure_plot")
     ))
   }
   
-  do.call(tagList, content)
+  do.call(tagList, hkls_content)
 })
 
       
