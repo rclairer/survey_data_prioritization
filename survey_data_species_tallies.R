@@ -45,7 +45,7 @@ tow_tally_table <- data.frame(matrix(ncol = 15, nrow = 0))
 tow_tally_table_col_names <- c("Species", "Year", "Total no catch", "Total postive catch", "< 10", "10 to 19", "20 to 29", "30 to 39", "40 to 49", "50 to 59", "60 to 69", "70 to 79", "80 to 89", "90 to 99", "> 99")
 colnames(tow_tally_table) <- tow_tally_table_col_names
 
-#black average cumulative length tally by number of rows table
+#blank average cumulative length tally by number of rows table
 average_tow_tally_table <- data.frame(matrix(ncol = 15, nrow = 0))
 colnames(average_tow_tally_table) <- tow_tally_table_col_names
 ##########################
@@ -235,7 +235,7 @@ formatted_last_five_age_structure <- flextable::flextable(last_five_years_age_st
 formatted_last_five_age_structure <- flextable::theme_vanilla(formatted_last_five_age_structure)
 
 #formatted_last_five_age_structure
-flextable::save_as_image(formatted_last_five_age_structure, path = paste0("formatted_last_five_years_age_structure_tally_table", year, ".png"))
+flextable::save_as_image(formatted_last_five_age_structure, path = paste0("formatted_last_five_years_age_structure_tally_table_", year, ".png"))
 
 tow_tally_table <- tow_tally_table %>%
   dplyr::select(-Year)
@@ -245,7 +245,7 @@ formatted_tow_tally_table <- flextable::flextable(tow_tally_table)
 formatted_tow_tally_table <- flextable::theme_vanilla(formatted_tow_tally_table)
 
 #formatted_tow_tally
-flextable::save_as_image(formatted_tow_tally_table, path = paste0("formatted_tow_tally_table", year, ".png"))
+flextable::save_as_image(formatted_tow_tally_table, path = paste0("formatted_tow_tally_table_", year, ".png"))
 
 average_tow_tally_table <- average_tow_tally_table %>%
   dplyr::select(-Year)
@@ -255,7 +255,7 @@ formatted_average_tow_tally_table <- flextable::flextable(average_tow_tally_tabl
 formatted_average_tow_tally_table <- flextable::theme_vanilla(formatted_average_tow_tally_table)
 
 #formatted_tow_tally
-flextable::save_as_image(formatted_average_tow_tally_table, path = paste0("formatted_average_across_years_tow_tally_table", year, ".png"))
+flextable::save_as_image(formatted_average_tow_tally_table, path = paste0("formatted_average_across_years_tow_tally_table_", year, ".png"))
 
 #length and age targets with cumulative tows tables
 
@@ -278,10 +278,4 @@ tow_tally_table_average <- readr::read_csv(here::here("2026", "average_across_ye
 
 wcgbts_tows_targets_average <- dplyr::left_join(wcgbts_targets, tow_tally_table_average, by = "Species")
 readr::write_csv(wcgbts_tows_targets_average, file = paste0("2026/average_across_years_tows_targets_", year, ".csv"))
-
-
-
-
-#############################
-#hook and line
 
