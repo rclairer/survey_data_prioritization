@@ -51,8 +51,6 @@ colnames(average_tow_tally_table) <- tow_tally_table_col_names
 ##########################
 
 catch_species <- sort(unique(wcgbts_catch$Common_name))
-#readr::write_csv(catch_species, file = paste0("2026/wcgbts_data/species_", year, ".csv"))
-#bio_species <- sort(unique(wcgbts_bio$Common_name))
 
 species_list <- catch_species
 for (i in 1:length(species_list)) {
@@ -259,10 +257,10 @@ flextable::save_as_image(formatted_average_tow_tally_table, path = paste0("wcgbt
 
 #length and age targets with cumulative tows tables
 
-wcgbts_length_targets <- readr::read_csv(here::here("2026", "data", "wcgbts_length_targets_2025.csv"))
+wcgbts_length_targets <- readr::read_csv(here::here("2026", "wcgbts_data", "wcgbts_length_targets_2025.csv"))
 colnames(wcgbts_length_targets) <- c("Species", "2025 length targets")
 
-wcgbts_age_targets <- readr::read_csv(here::here("2026", "data", "wcgbts_age_targets_2025.csv"))
+wcgbts_age_targets <- readr::read_csv(here::here("2026", "wcgbts_data", "wcgbts_age_targets_2025.csv"))
 colnames(wcgbts_age_targets) <- c("Species", "2025 age targets")
 
 wcgbts_targets <- dplyr::left_join(wcgbts_length_targets, wcgbts_age_targets, tow_tally_table_use, by = "Species")
@@ -271,11 +269,11 @@ wcgbts_targets <- dplyr::left_join(wcgbts_length_targets, wcgbts_age_targets, to
 tow_tally_table_year <- readr::read_csv(here::here("2026", "wcgbts_tow_tally_table_2026.csv"))
 
 wcgbts_tows_targets_year <- dplyr::left_join(wcgbts_targets, tow_tally_table_year, by = "Species")
-readr::write_csv(wcgbts_tows_targets_year, file = paste0("2026/wcgbts_tows_targets_", year, ".csv"))
+readr::write_csv(wcgbts_tows_targets_year, file = paste0("wcgbts_tows_targets_", year, ".csv"))
 
 #average catch
 tow_tally_table_average <- readr::read_csv(here::here("2026", "wcgbts_average_across_years_tow_tally_table_2026.csv"))
 
 wcgbts_tows_targets_average <- dplyr::left_join(wcgbts_targets, tow_tally_table_average, by = "Species")
-readr::write_csv(wcgbts_tows_targets_average, file = paste0("2026/wcgbts_average_across_years_tows_targets_", year, ".csv"))
+readr::write_csv(wcgbts_tows_targets_average, file = paste0("wcgbts_average_across_years_tows_targets_", year, ".csv"))
 

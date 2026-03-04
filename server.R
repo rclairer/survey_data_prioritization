@@ -9,7 +9,7 @@ library(gt)
 server <- function(input, output, session) {
   
   length_data <- read.csv(
-    here::here("2026", "length_tally_table_2026.csv"),
+    here::here("2026", "wcgbts_length_tally_table_2026.csv"),
     check.names = FALSE,
     stringsAsFactors = FALSE
   )
@@ -20,17 +20,17 @@ server <- function(input, output, session) {
   year_lookup <- setNames(year_cols, years)
   
   age_structure_data <- read.csv(
-    here::here("2026", "age_structure_tally_table_2026.csv"),
+    here::here("2026", "wcgbts_age_structure_tally_table_2026.csv"),
     check.names = FALSE,
     stringsAsFactors = FALSE
   )
   
   tows_targets_year <- readr::read_csv(
-    here::here("2026", "tows_targets_2026.csv"), show_col_types = FALSE
+    here::here("2026", "wcgbts_tows_targets_2026.csv"), show_col_types = FALSE
   )
     
   tows_targets_average <- readr::read_csv(
-    here::here("2026", "average_across_years_tows_targets_2026.csv"), show_col_types = FALSE
+    here::here("2026", "wcgbts_average_across_years_tows_targets_2026.csv"), show_col_types = FALSE
   )
   
 #Species checkboxes
