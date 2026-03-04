@@ -8,7 +8,7 @@ library(nwfscSurvey)
 library(readr)
 library(flextable)
 
-dir <- here::here("2026", "data")
+dir <- here::here("2026", "wcgbts_data")
 
 #source functions
 source(here::here("R","pull_wcgbts.R"))
@@ -51,7 +51,7 @@ colnames(average_tow_tally_table) <- tow_tally_table_col_names
 ##########################
 
 catch_species <- sort(unique(wcgbts_catch$Common_name))
-#readr::write_csv(catch_species, file = paste0("2026/Data/species_", year, ".csv"))
+#readr::write_csv(catch_species, file = paste0("2026/wcgbts_data/species_", year, ".csv"))
 #bio_species <- sort(unique(wcgbts_bio$Common_name))
 
 species_list <- catch_species
@@ -197,65 +197,65 @@ print(species)
 #have to go back to the main directory
 setwd(here::here("2026"))
 
-readr::write_csv(length_tally_table, paste0("length_tally_table_", year, ".csv"))
+readr::write_csv(length_tally_table, paste0("wcgbts_length_tally_table_", year, ".csv"))
 
-readr::write_csv(age_structure_tally_table, paste0("age_structure_tally_table_", year, ".csv"))
+readr::write_csv(age_structure_tally_table, paste0("wcgbts_age_structure_tally_table_", year, ".csv"))
 
 #make main tables pretty
 formatted_length <- flextable::flextable(length_tally_table)
 formatted_length <- flextable::theme_vanilla(formatted_length)
 
 #formatted_length
-flextable::save_as_image(formatted_length, path = paste0("formatted_length_tally_table_", year, ".png"))
+flextable::save_as_image(formatted_length, path = paste0("wcgbts_formatted_length_tally_table_", year, ".png"))
 
 formatted_age_structure <- flextable::flextable(age_structure_tally_table)
 formatted_age_structure <- flextable::theme_vanilla(formatted_age_structure)
 
 #formatted_age_structure
-flextable::save_as_image(formatted_age_structure, path = paste0("formatted_age_structure_tally_table_", year, ".png"))
+flextable::save_as_image(formatted_age_structure, path = paste0("wcgbts_formatted_age_structure_tally_table_", year, ".png"))
 
 #and truncate main tables and make them pretty
 last_five_years <- tail(colnames(length_tally_table), 5)
 
 last_five_years_length_tally_table <- length_tally_table[,c("Species", last_five_years)]
 
-readr::write_csv(last_five_years_length_tally_table, paste0("last_five_years_length_tally_table_", year, ".csv"))
+readr::write_csv(last_five_years_length_tally_table, paste0("wcgbts_last_five_years_length_tally_table_", year, ".csv"))
 
 last_five_years_age_structure_tally_table <- age_structure_tally_table[,c("Species", last_five_years)]
 
-readr::write_csv(last_five_years_age_structure_tally_table, paste0("last_five_years_age_structure_tally_table_", year, ".csv"))
+readr::write_csv(last_five_years_age_structure_tally_table, paste0("wcgbts_last_five_years_age_structure_tally_table_", year, ".csv"))
 
 formatted_last_five_length <- flextable::flextable(last_five_years_length_tally_table)
 formatted_last_five_length <- flextable::theme_vanilla(formatted_last_five_length)
 
 #formatted_last_five_length
-flextable::save_as_image(formatted_last_five_length, path = paste0("formatted_last_five_years_length_tally_table_", year, ".png"))
+flextable::save_as_image(formatted_last_five_length, path = paste0("wcgbts_formatted_last_five_years_length_tally_table_", year, ".png"))
 
 formatted_last_five_age_structure <- flextable::flextable(last_five_years_age_structure_tally_table)
 formatted_last_five_age_structure <- flextable::theme_vanilla(formatted_last_five_age_structure)
 
 #formatted_last_five_age_structure
-flextable::save_as_image(formatted_last_five_age_structure, path = paste0("formatted_last_five_years_age_structure_tally_table_", year, ".png"))
+flextable::save_as_image(formatted_last_five_age_structure, path = paste0("wcgbts_formatted_last_five_years_age_structure_tally_table_", year, ".png"))
 
 tow_tally_table <- tow_tally_table %>%
   dplyr::select(-Year)
-readr::write_csv(tow_tally_table, paste0("tow_tally_table_", year, ".csv"))
+readr::write_csv(tow_tally_table, paste0("wcgbts_tow_tally_table_", year, ".csv"))
 
 formatted_tow_tally_table <- flextable::flextable(tow_tally_table)
 formatted_tow_tally_table <- flextable::theme_vanilla(formatted_tow_tally_table)
 
 #formatted_tow_tally
-flextable::save_as_image(formatted_tow_tally_table, path = paste0("formatted_tow_tally_table_", year, ".png"))
+flextable::save_as_image(formatted_tow_tally_table, path = paste0("wcgbts_formatted_tow_tally_table_", year, ".png"))
 
 average_tow_tally_table <- average_tow_tally_table %>%
   dplyr::select(-Year)
-readr::write_csv(average_tow_tally_table, paste0("average_across_years_tow_tally_table_", year, ".csv"))
+readr::write_csv(average_tow_tally_table, paste0("wcgbts_average_across_years_tow_tally_table_", year, ".csv"))
 
 formatted_average_tow_tally_table <- flextable::flextable(average_tow_tally_table)
 formatted_average_tow_tally_table <- flextable::theme_vanilla(formatted_average_tow_tally_table)
 
 #formatted_tow_tally
-flextable::save_as_image(formatted_average_tow_tally_table, path = paste0("formatted_average_across_years_tow_tally_table_", year, ".png"))
+flextable::save_as_image(formatted_average_tow_tally_table, path = paste0("wcgbts_formatted_average_across_years_tow_tally_table_", year, ".png"))
 
 #length and age targets with cumulative tows tables
 
@@ -268,14 +268,14 @@ colnames(wcgbts_age_targets) <- c("Species", "2025 age targets")
 wcgbts_targets <- dplyr::left_join(wcgbts_length_targets, wcgbts_age_targets, tow_tally_table_use, by = "Species")
 
 #last year's catch
-tow_tally_table_year <- readr::read_csv(here::here("2026", "tow_tally_table_2026.csv"))
+tow_tally_table_year <- readr::read_csv(here::here("2026", "wcgbts_tow_tally_table_2026.csv"))
 
 wcgbts_tows_targets_year <- dplyr::left_join(wcgbts_targets, tow_tally_table_year, by = "Species")
-readr::write_csv(wcgbts_tows_targets_year, file = paste0("2026/tows_targets_", year, ".csv"))
+readr::write_csv(wcgbts_tows_targets_year, file = paste0("2026/wcgbts_tows_targets_", year, ".csv"))
 
 #average catch
-tow_tally_table_average <- readr::read_csv(here::here("2026", "average_across_years_tow_tally_table_2026.csv"))
+tow_tally_table_average <- readr::read_csv(here::here("2026", "wcgbts_average_across_years_tow_tally_table_2026.csv"))
 
 wcgbts_tows_targets_average <- dplyr::left_join(wcgbts_targets, tow_tally_table_average, by = "Species")
-readr::write_csv(wcgbts_tows_targets_average, file = paste0("2026/average_across_years_tows_targets_", year, ".csv"))
+readr::write_csv(wcgbts_tows_targets_average, file = paste0("2026/wcgbts_average_across_years_tows_targets_", year, ".csv"))
 
