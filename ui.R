@@ -8,7 +8,7 @@ ui <- shiny::fluidPage(
   shiny::tabsetPanel(
     
     shiny::tabPanel(
-      "Length and age structure tallies",
+      "WCGBTS length and age structure tallies",
         shiny::sidebarLayout(
         shiny::sidebarPanel(
       
@@ -35,7 +35,7 @@ ui <- shiny::fluidPage(
 ),
     
     shiny::tabPanel(
-        "Targets and catch per tow tallies",
+        "WCGBTS targets and catch per tow tallies",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
             shiny::selectInput(
@@ -50,6 +50,34 @@ ui <- shiny::fluidPage(
         gt::gt_output("tows_targets_table")
     )
   )
+),
+
+shiny::tabPanel(
+  "HKLS length and age structure tallies",
+  shiny::sidebarLayout(
+    shiny::sidebarPanel(
+      
+      shiny::checkboxGroupInput(
+        "hkls_table_type",
+        "Display:",
+        choices = c("Length" = "hkls_length",
+                    "Age" = "hkls_age"),
+        selected = c("hkls_length", "hkls_age")
+      ),
+      
+      shiny::uiOutput("hkls_year_ui"),
+      
+      shiny::actionButton("hkls_toggle_all", "Select/deselect all species"),
+      
+      shiny::uiOutput("hkls_species_ui")
+      
+    ),
+    
+    shiny::mainPanel(
+      shiny::uiOutput("hkls_dynamic_content")
+    )
+  )
 )
+
 )
 )

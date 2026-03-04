@@ -7,7 +7,8 @@ library(readr)
 library(gt)
 
 server <- function(input, output, session) {
-  
+
+#WCGBTS
   length_data <- read.csv(
     here::here("2026", "wcgbts_length_tally_table_2026.csv"),
     check.names = FALSE,
@@ -250,5 +251,189 @@ output$tows_targets_table <- render_gt({
    gt_tbl 
    
   })
+
+#HKLS
+
+hkls_length_data <- read.csv(
+  here::here("2026", "hkls_length_tally_table_2026.csv"),
+  check.names = FALSE,
+  stringsAsFactors = FALSE
+)
+
+#extract year columns
+hkls_year_cols <- names(hkls_length_data)[-1]
+hkls_years <- as.numeric(hkls_year_cols)
+hkls_year_lookup <- setNames(hkls_year_cols, hkls_years)
+
+hkls_age_structure_data <- read.csv(
+  here::here("2026", "hkls_age_structure_tally_table_2026.csv"),
+  check.names = FALSE,
+  stringsAsFactors = FALSE
+)
+
+#Species checkboxes
+
+output$hkls_species_ui <- shiny::renderUI({
+  shiny::checkboxGroupInput(
+    "hkls_species",
+    "Select species:",
+    choices = hkls_length_data$Species,
+    selected = hkls_length_data$Species
+  )
+})
+#dynamically create year slider
+
+output$hkls_year_ui <- shiny::renderUI({
+  shiny::sliderInput(
+    "hkls_year_range",
+    "Select year range:",
+    min = min(hkls_years),
+    max = max(hkls_years),
+    value = c(min(hkls_years), max(hkls_years)), #default
+    sep = ""
+  )
+  
+})
+
+shiny::observeEvent(input$hkls_toggle_all, {
+  shiny::req(input$hkls_species)
+  if (length(input$hkls_species) < length(hkls_length_data$Species)){
+    shiny::updateCheckboxGroupInput(session, "hkls_species", selected = hkls_length_data$Species)
+  } else {
+    shiny::updateCheckboxGroupInput(session, "hkls_species", selected = character(0))
+  }
+})
+
+
+hkls_length_tally_data <- shiny::reactive({
+  
+  shiny::req(input$hkls_species, input$hkls_year_range)
+  
+  selected_years <- seq(input$hkls_year_range[1], input$hkls_year_range[2])
+  
+  actual_cols <- na.omit(hkls_year_lookup[as.character(selected_years)])
+  
+  hkls_length_data %>%
+    dplyr::filter(Species %in% input$hkls_species) %>%
+    dplyr::select(Species, all_of(actual_cols))
+  
+})
+
+hkls_age_structure_tally_data <- shiny::reactive({
+  
+  shiny::req(input$hkls_species, input$hkls_year_range)
+  
+  selected_years <- seq(input$hkls_year_range[1], input$hkls_year_range[2])
+  
+  actual_cols <- na.omit(hkls_year_lookup[as.character(selected_years)])
+  
+  hkls_age_structure_data %>%
+    dplyr::filter(Species %in% input$hkls_species) %>%
+    dplyr::select(Species, all_of(actual_cols))
+  
+})
+
+output$hkls_length_tally <- shiny::renderTable({
+  hkls_length_tally_data()
+})
+
+output$hkls_age_structure_tally <- shiny::renderTable({
+  hkls_age_structure_tally_data()
+})
+
+output$hkls_length_plot <- shiny::renderPlot({
+  shiny::req(hkls_length_tally_data(), input$hkls_year_range)
+  
+  df <- hkls_length_tally_data()
+  
+  df_long <- df |> 
+    tidyr::pivot_longer(
+      cols = -Species,
+      names_to = "year",
+      values_to = "value"
+    ) |>
+    dplyr::mutate(year = as.numeric(year))
+  
+  ggplot2::ggplot(df_long,
+                  ggplot2::aes(x = year,
+                               y = value,
+                               color = Species,
+                               group = Species)) +
+    ggplot2::geom_line(linewidth = 1.2) +
+    ggplot2::geom_point(size = 2) +
+    ggplot2::labs(
+      title = "Length tally by species",
+      x = "Year",
+      y = "Length tally",
+      color = "Species"
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(face = "bold"),
+      legend.position = "right"
+    )
+  
+})
+
+output$hkls_age_structure_plot <- shiny::renderPlot({
+  shiny::req(hkls_age_structure_tally_data(), input$hkls_year_range)
+  
+  df <- hkls_age_structure_tally_data()
+  
+  df_long <- df |> 
+    tidyr::pivot_longer(
+      cols = -Species,
+      names_to = "year",
+      values_to = "value"
+    ) |>
+    dplyr::mutate(year = as.numeric(year))
+  
+  ggplot2::ggplot(df_long,
+                  ggplot2::aes(x = year,
+                               y = value,
+                               color = Species,
+                               group = Species)) +
+    ggplot2::geom_line(linewidth = 1.2) +
+    ggplot2::geom_point(size = 2) +
+    ggplot2::labs(
+      title = "Age structure tally by species",
+      x = "Year",
+      y = "Age strcuture tally",
+      color = "Species"
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(face = "bold"),
+      legend.position = "right"
+    )
+  
+})  
+
+output$hkls_dynamic_content <- renderUI({
+  shiny::req(input$hkls_table_type)
+  
+  content <- list()
+  
+  if("hkls_length" %in% input$hkl_table_type) {
+    content <- append(content, list(
+      h4("Length tally"),
+      shiny::tableOutput("hkls_length_tally"),
+      shiny::plotOutput("hkls_length_plot"),
+      hr()
+    ))
+    
+  }
+  
+  if("hkls_age" %in% input$hkls_table_type) {
+    content <- append(content, list(
+      h4("Age structure tally"),
+      shiny::tableOutput("hkls_age_structure_tally"),
+      shiny::plotOutput("hkls_age_structure_plot")
+    ))
+  }
+  
+  do.call(tagList, content)
+})
+
       
 }
