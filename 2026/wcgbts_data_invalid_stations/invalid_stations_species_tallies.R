@@ -18,7 +18,7 @@ formatted_reason_invalid <- flextable::flextable(reason_invalid) |>
   flextable::set_header_labels(values = list("Reason_station_invalid" = "Reason invalid", "n_tows" = "Number of tows")) |>
   flextable::autofit()
 
-flextable::save_as_image(formatted_reason_invalid, path = here::here("2026","wcgbts_data_invalid_stations","Reason_invalid.png"))
+flextable::save_as_image(formatted_reason_invalid, path = here::here("2026","wcgbts_data_invalid_stations","reason_invalid.png"))
 
 
 #how many tows at invalid stations have satisfactory data?
@@ -45,7 +45,7 @@ formatted_invalid_tows_per_year <- flextable::flextable(invalid_tows_per_year) |
     flextable::set_header_labels(values = list("Reason_station_invalid" = "Reason invalid", "n_tows" = "Number of tows at invalid stations")) |>
   flextable::autofit()
 
-flextable::save_as_image(formatted_invalid_tows_per_year, path = here::here("2026","wcgbts_data_invalid_stations","Invalid_tows_per_year.png"))
+flextable::save_as_image(formatted_invalid_tows_per_year, path = here::here("2026","wcgbts_data_invalid_stations","invalid_tows_per_year.png"))
 
 #what data are we missing?
 
@@ -127,11 +127,11 @@ formatted_length <- flextable::flextable(length_tally_table) |>
   flextable::theme_vanilla()
 
 #formatted_length
-flextable::save_as_image(formatted_length, path = here::here("2026","wcgbts_data_invalid_stations","Length_tally_table_invlaid_stations.png"))
+flextable::save_as_image(formatted_length, path = here::here("2026","wcgbts_data_invalid_stations","length_tally_table_invalid_stations.png"))
 
 formatted_age_structure <- flextable::flextable(age_structure_tally_table) |>
   flextable::theme_vanilla()
 
 #formatted_age_structure
-flextable::save_as_image(formatted_age_structure, path = here::here("2026","wcgbts_data_invalid_stations","Age_structure_tally_table_invlaid_stations.png"))
+flextable::save_as_image(formatted_age_structure, path = here::here("2026","wcgbts_data_invalid_stations","age_structure_tally_table_invalid_stations.png"))
 
